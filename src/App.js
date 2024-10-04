@@ -53,6 +53,7 @@ import Wishlist from './components/Product/Wishlist';
 
 import MainFooter from './components/Layout/Footer/MainFooter';
 import Footer from './components/Layout/Footer/Footer';
+import Login from './components/User/LoginAndRegister';
 
 /*
     TODO: #5 Sidebar for Admin Dashboard Not Visible
@@ -130,7 +131,7 @@ function App() {
           element={<ResetPassword />}
           exact
         />
-        <Route path='/login' element={<LoginAndRegister />} exact />
+        <Route path='/login' element={<Login />} exact />
         {/* <Route path='/register' element={<Signup />} exact /> */}
 
         <Route path='/cart' element={<Cart />} exact />

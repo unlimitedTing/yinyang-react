@@ -117,26 +117,14 @@
 
 import React from 'react';
 import NavigationItem from './NavigationItem';
-import SocialIcon from './SocialIcon';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faUser } from '@fortawesome/free-solid-svg-icons';
 
 const navigationItems = [
-  { label: 'Products', width: '71px' },
-  { label: 'Collections', width: '88px' },
-  { label: 'Gift ideas', width: '75px' },
-  { label: 'Contact Us', width: '86px' }
-];
-
-const socialIcons = [
-  {
-    src: 'https://cdn.builder.io/api/v1/image/assets/TEMP/3d48d7f6da59d5a254d3de86be0679408e0933193b27f6adc685d37f64af0576?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60',
-    alt: 'Social media icon 1',
-    url: ''
-  },
-  {
-    src: 'https://cdn.builder.io/api/v1/image/assets/TEMP/3694a02fa1bf48b1f54a51a2a2f11fa0f033b6a018fe49ba4cd65562ae7a5648?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60',
-    alt: 'Social media icon 2',
-    url: ''
-  }
+  { label: 'Products', width: '71px', href: '/products' },
+  { label: 'WishList', width: '88px', href: '/wishlist' },
+  { label: 'Account', width: '75px', href: '/account' },
+  { label: 'Contact Us', width: '86px', href: '/contact-us' }
 ];
 
 function Header() {
@@ -144,18 +132,26 @@ function Header() {
     <header className='flex flex-col pt-3.5 pb-1 w-full bg-white shadow-[0px_4px_10px_rgba(0,0,0,0.25)] max-md:max-w-full'>
       <div className='flex justify-between items-center w-full max-w-[1380px] mx-auto'>
         <h1 className='text-5xl font-bold text-black border border-white border-solid max-md:text-4xl'>
-          YINYANG
+          <a href='/'>YINYANG</a>
         </h1>
         <div className='flex gap-8 items-center'>
-          {socialIcons.map((icon, index) => (
-            <SocialIcon key={index} src={icon.src} alt={icon.alt} />
-          ))}
+          <a href='/search' aria-label='Search'>
+            <FontAwesomeIcon icon={faSearch} className='mr-2' />
+          </a>
+          <a href='/login' aria-label='Signup'>
+            <FontAwesomeIcon icon={faUser} className='mr-2' />
+          </a>
         </div>
       </div>
       <div className='mt-5 w-full border-black border-solid border-[7px] min-h-[7px] max-md:max-w-full' />
       <nav className='flex gap-10 items-center mt-7 mx-9 text-base font-medium text-zinc-800'>
         {navigationItems.map((item, index) => (
-          <NavigationItem key={index} label={item.label} width={item.width} />
+          <NavigationItem
+            key={index}
+            label={item.label}
+            width={item.width}
+            href={item.href}
+          />
         ))}
       </nav>
     </header>

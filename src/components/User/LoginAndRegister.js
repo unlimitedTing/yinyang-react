@@ -216,11 +216,6 @@ const LoginAndRegister = () => {
                   </span>
                 </div>
                 <div id='registerImage' className='mb-4'>
-                  <img
-                    src={avatarPreview}
-                    alt='Avatar Preview'
-                    className='w-24 h-24 mb-2'
-                  />
                   <input
                     type='file'
                     name='avatar'

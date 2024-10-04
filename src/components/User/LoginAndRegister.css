@@ -151,7 +151,7 @@
 }
 
 .shiftToLeft {
-    transform: translateX(-100%);
+    transform: translateX(-100vmax);
 }
 
 .shiftToNeutral {
@@ -159,7 +159,7 @@
 }
 
 .shiftToNeutralForm {
-    transform: translateX(0%) translateY(-100%);
+    transform: translateX(0%) translateY(-80%);
 }
 
 .shiftToRight {
