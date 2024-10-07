@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import { Country, State } from 'country-state-city';
 import { saveShippingInfo } from '../../actions/cartAction';
-import CheckoutSteps from '../Cart/CheckoutSteps';
+import CheckoutSteps from './CheckoutSteps';
 import MetaData from '../Layout/MetaData';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
