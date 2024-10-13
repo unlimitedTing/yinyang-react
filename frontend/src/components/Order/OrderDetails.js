@@ -107,7 +107,7 @@ const OrderDetails = () => {
                     ? 'PAID'
                     : 'NOT PAID'}
                 </p>
-                <p>Amount: ₹{order.totalPrice}</p>
+                <p>Amount: ${order.totalPrice}</p>
               </div>
               <h3 className='text-lg'>Order Status</h3>
               <p
@@ -214,8 +214,8 @@ const OrderDetails = () => {
                         <p className='font-semibold'>{item.name}</p>
                       </Link>
                       <p>Quantity: {item.quantity}</p>
-                      <p>Price: ₹{item.price}</p>
-                      <p>Total: ₹{item.price * item.quantity}</p>
+                      <p>Price: ${item.price}</p>
+                      <p>Total: ${item.price * item.quantity}</p>
                     </div>
                   </div>
                 ))}

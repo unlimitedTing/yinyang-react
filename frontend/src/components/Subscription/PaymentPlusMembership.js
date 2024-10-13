@@ -138,7 +138,7 @@ const PaymentPlusMembership = () => {
             ref={payBtn}
             className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition'
           >
-            Pay - ₹{orderInfo && orderInfo.totalPrice}
+            Pay - ${orderInfo && orderInfo.totalPrice}
           </button>
         </form>
       </div>

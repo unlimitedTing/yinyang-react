@@ -71,7 +71,7 @@ const dummyProducts = [
   }
 ];
 
-// Get All Products (Mocked)
+// Get All Products
 export const getProduct =
   (keyword = '', currentPage = 1, price = [0, 400000], category, ratings = 0) =>
   async dispatch => {
@@ -99,17 +99,17 @@ export const getProduct =
     }
   };
 
-// Get Products Details (Mocked)
+// Get Products Details
 export const getProductDetails = id => async dispatch => {
   try {
     dispatch({ type: PRODUCT_DETAILS_REQUEST });
 
-    // Find the product by ID
-    const product = dummyProducts.find(item => item.id === id);
+    // Make an API call to fetch product details by ID
+    const { data } = await axios.get(`/api/v1/product/${id}`);
 
     dispatch({
       type: PRODUCT_DETAILS_SUCCESS,
-      payload: product
+      payload: data.product
     });
   } catch (error) {
     dispatch({
@@ -284,7 +284,6 @@ export const fetchWishlist = () => async dispatch => {
     dispatch({ type: ALL_WISHLIST_PRODUCTS_REQUEST });
 
     const storedWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-    console.log('Fetched from localStorage:', storedWishlist);
 
     dispatch({
       type: ALL_WISHLIST_PRODUCTS_SUCCESS,
@@ -303,15 +302,26 @@ export const addProductToWishlist = id => async dispatch => {
   try {
     dispatch({ type: ADD_PRODUCT_TO_WISHLIST_REQUEST });
 
-    // Simulate adding a product to the wishlist
-    const wishlist = {
-      id,
-      message: 'Product added to wishlist'
-    };
+    // Retrieve the current wishlist of product IDs from localStorage or initialize as empty
+    const existingWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+    // Check if the product is already in the wishlist to avoid duplicates
+    if (existingWishlist.includes(id)) {
+      return dispatch({
+        type: ADD_PRODUCT_TO_WISHLIST_SUCCESS,
+        payload: existingWishlist
+      });
+    }
+
+    // Add the new productId to the wishlist
+    const updatedWishlist = [...existingWishlist, id];
+
+    // Update localStorage with the updated list of product IDs
+    localStorage.setItem('wishlist', JSON.stringify(updatedWishlist));
 
     dispatch({
       type: ADD_PRODUCT_TO_WISHLIST_SUCCESS,
-      payload: wishlist
+      payload: updatedWishlist
     });
   } catch (error) {
     dispatch({

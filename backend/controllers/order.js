@@ -109,10 +109,10 @@ exports.newOrder = async (req, res, next) => {
     //       ${order.orderItems
     //           .map(
     //               item =>
-    //                   `${item.name} - Quantity: ${item.quantity} - Price: ₹${item.price}`
+    //                   `${item.name} - Quantity: ${item.quantity} - Price: $${item.price}`
     //           )
     //           .join('\n')}
-    //    Total Price: ₹${order.totalPrice}
+    //    Total Price: $${order.totalPrice}
 
     //    Thank you for ordering. For more please visit our website http://www.orderplanning.com.\n
     //    Happy Shopping.😊`;
@@ -282,10 +282,10 @@ exports.updateOrder = async (req, res, next) => {
     // ${order.orderItems
     //     .map(
     //         item =>
-    //             `${item.name} - Quantity: ${item.quantity} - Price: ₹${item.price}`
+    //             `${item.name} - Quantity: ${item.quantity} - Price: $${item.price}`
     //     )
     //     .join('\n')}
-    // Total Price: ₹${order.totalPrice}
+    // Total Price: $${order.totalPrice}
     // Thank you for ordering. For more please visit our website http://www.orderplanning.com.\n
     // Happy Shopping.😊`;
 

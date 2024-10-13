@@ -316,7 +316,6 @@ export const wishlistReducer = (state = initialState, action) => {
       };
 
     case ALL_WISHLIST_PRODUCTS_SUCCESS:
-      console.log('Updating state with wishlist:', action.payload); // Confirm payload is correct
       return {
         ...state,
         loading: false,

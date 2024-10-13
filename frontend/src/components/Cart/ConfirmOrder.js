@@ -84,8 +84,8 @@ const ConfirmOrder = () => {
                     {item.name}
                   </Link>
                   <span className='ml-4'>
-                    {item.quantity} x ₹{item.price} ={' '}
-                    <b>₹{item.price * item.quantity}</b>
+                    {item.quantity} x ${item.price} ={' '}
+                    <b>${item.price * item.quantity}</b>
                   </span>
                 </div>
               ))}
@@ -97,11 +97,11 @@ const ConfirmOrder = () => {
             <h2 className='text-lg font-bold'>Order Summary</h2>
             <div className='mt-2'>
               <p>
-                Subtotal: <span className='font-semibold'>₹{subtotal}</span>
+                Subtotal: <span className='font-semibold'>${subtotal}</span>
               </p>
               <p>
                 Shipping Charges:{' '}
-                <span className='font-semibold'>₹{shippingCharges}</span>
+                <span className='font-semibold'>${shippingCharges}</span>
               </p>
               <div className='mt-2'>
                 <label className='block'>Select Coupon:</label>
@@ -127,7 +127,7 @@ const ConfirmOrder = () => {
             <div className='mt-4'>
               <p>
                 <b>Total:</b>{' '}
-                <span className='font-semibold'>₹{totalPrice}</span>
+                <span className='font-semibold'>${totalPrice}</span>
               </p>
             </div>
             <button

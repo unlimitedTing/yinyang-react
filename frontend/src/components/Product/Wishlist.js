@@ -37,10 +37,6 @@ const Wishlist = () => {
     dispatch(fetchWishlist());
   }, [dispatch, error]);
 
-  useEffect(() => {
-    console.log('Wishlist state after fetch:', wishlist); // Check state after dispatching fetchWishlist
-  }, [wishlist]);
-
   let count = filteredProductsCount;
 
   return (
@@ -53,12 +49,17 @@ const Wishlist = () => {
           <h2 className='productsHeading'>Wishlist</h2>
           <div className='products'>
             {wishlist && wishlist.length > 0 ? (
-              wishlist.map(
-                product =>
-                  product && (
-                    <WishlistProductCard key={product._id} product={product} />
-                  )
-              )
+              wishlist
+                .flat()
+                .map(
+                  productId =>
+                    productId && (
+                      <WishlistProductCard
+                        key={productId}
+                        productId={productId}
+                      />
+                    )
+                )
             ) : (
               <p>Your wishlist is currently empty.</p>
             )}

@@ -136,7 +136,7 @@ const Payment = () => {
 
           <input
             type='submit'
-            value={`Pay - ₹${orderInfo && orderInfo.totalPrice}`}
+            value={`Pay - $${orderInfo && orderInfo.totalPrice}`}
             ref={payBtn}
             className='paymentFormBtn bg-blue-600 text-white rounded-md p-2 cursor-pointer'
             onClick={submitHandler}

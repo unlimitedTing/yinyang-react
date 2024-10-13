@@ -113,13 +113,13 @@ const Dashboard = () => {
         <div className='dashboardSummary'>
           <div>
             <p>
-              Total Amount <br /> ₹{totalAmount}
+              Total Amount <br /> ${totalAmount}
             </p>
             <p>
-              Total Return Amount <br /> ₹{totalReturnAmount}
+              Total Return Amount <br /> ${totalReturnAmount}
             </p>
             {/* <p>
-                                Total Net Amount <br /> ₹{totalNetAmount}
+                                Total Net Amount <br /> ${totalNetAmount}
                             </p> */}
           </div>
 
