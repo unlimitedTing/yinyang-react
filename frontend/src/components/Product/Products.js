@@ -27,14 +27,13 @@ const Products = () => {
     resultPerPage,
     filteredProductsCount
   } = useSelector(state => state.products);
-
   const setCurrentPageNo = e => {
     setCurrentPage(e);
   };
 
-  const getUniqueCategories = dummyProducts => {
+  const getUniqueCategories = products => {
     const categoriesSet = new Set();
-    dummyProducts.forEach(product => {
+    products.forEach(product => {
       categoriesSet.add(product.category);
     });
     return Array.from(categoriesSet);
@@ -42,21 +41,27 @@ const Products = () => {
 
   const priceRanges = [
     [
-      { key: 'range1', label: '0 - 1000', value: [0, 1000] },
-      { key: 'range2', label: '1000 - 2500', value: [1000, 2500] }
+      { key: 'range1', label: '0 - 100', value: [0, 100] },
+      { key: 'range2', label: '100 - 250', value: [100, 250] }
     ],
     [
-      { key: 'range3', label: '2500 - 5000', value: [2500, 5000] },
-      { key: 'range4', label: '5000+', value: [5000, 400000] }
+      { key: 'range3', label: '250 - 500', value: [250, 500] },
+      { key: 'range4', label: '500+', value: [500, 40000] }
     ]
   ];
 
   const priceHandler = (event, newPrice) => {
     if (price[0] === newPrice[0] && price[1] === newPrice[1]) {
-      setPrice([0, 400000]);
+      setPrice([0, 40000]);
     } else {
       setPrice(newPrice);
     }
+  };
+  const resetFilters = () => {
+    setCategory('');
+    setPrice([0, 40000]);
+    setRatings(0);
+    dispatch(getProduct('', 1, [0, 40000], '', 0)); // Fetch products with no filters
   };
 
   useEffect(() => {
@@ -71,110 +76,6 @@ const Products = () => {
 
   let count = filteredProductsCount;
 
-  const dummyProducts = [
-    {
-      id: '1',
-      name: 'Silver Ring',
-      description:
-        'Lorem ipsum dolor sit amet consectetur. Dolor et volutpat in non. Luctus sit libero urna viverra sed non dui elementum Dolor et volutpat in non. Luctus sit libero urna viverra .',
-      price: '$280.90',
-      sizes: ['S', 'M', 'L'],
-      category: 'Category 2',
-      rating: 4.0,
-      images: [
-        {
-          url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/de85919a47b137ba4a7ac34606944003414f41702edacf80ef7c795a37aaddd3?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-        }
-      ],
-      imageSrc:
-        'https://cdn.builder.io/api/v1/image/assets/TEMP/de85919a47b137ba4a7ac34606944003414f41702edacf80ef7c795a37aaddd3?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-    },
-    {
-      id: '2',
-      name: 'Gemstone Bracelet',
-      description:
-        'Lorem ipsum dolor sit amet consectetur. Dolor et volutpat in non. Luctus sit libero urna viverra sed non dui elementum Dolor et volutpat in non. Luctus sit libero urna viverra .',
-      price: '$680.90',
-      sizes: ['S', 'M', 'L'],
-      category: 'Category 1',
-      rating: 4.0,
-      images: [
-        {
-          url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/31b69bfee0eac0dfc09e08e8a402b9339c0fd0915058c81a216a854851824ca9?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-        }
-      ],
-      imageSrc:
-        'https://cdn.builder.io/api/v1/image/assets/TEMP/31b69bfee0eac0dfc09e08e8a402b9339c0fd0915058c81a216a854851824ca9?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-    },
-    {
-      id: '3',
-      name: 'Silver Ring',
-      description:
-        'Lorem ipsum dolor sit amet consectetur. Dolor et volutpat in non. Luctus sit libero urna viverra sed non dui elementum Dolor et volutpat in non. Luctus sit libero urna viverra .',
-      price: '$280.90',
-      sizes: ['S', 'M', 'L'],
-      category: 'Category 2',
-      rating: 4.0,
-      images: [
-        {
-          url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/de85919a47b137ba4a7ac34606944003414f41702edacf80ef7c795a37aaddd3?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-        }
-      ],
-      imageSrc:
-        'https://cdn.builder.io/api/v1/image/assets/TEMP/de85919a47b137ba4a7ac34606944003414f41702edacf80ef7c795a37aaddd3?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-    },
-    {
-      id: '4',
-      name: 'Gemstone Bracelet',
-      description:
-        'Lorem ipsum dolor sit amet consectetur. Dolor et volutpat in non. Luctus sit libero urna viverra sed non dui elementum Dolor et volutpat in non. Luctus sit libero urna viverra .',
-      price: '$680.90',
-      sizes: ['S', 'M', 'L'],
-      category: 'Category 1',
-      rating: 4.0,
-      images: [
-        {
-          url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/31b69bfee0eac0dfc09e08e8a402b9339c0fd0915058c81a216a854851824ca9?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-        }
-      ],
-      imageSrc:
-        'https://cdn.builder.io/api/v1/image/assets/TEMP/31b69bfee0eac0dfc09e08e8a402b9339c0fd0915058c81a216a854851824ca9?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-    },
-    {
-      id: '5',
-      name: 'Silver Ring',
-      description:
-        'Lorem ipsum dolor sit amet consectetur. Dolor et volutpat in non. Luctus sit libero urna viverra sed non dui elementum Dolor et volutpat in non. Luctus sit libero urna viverra .',
-      price: '$280.90',
-      sizes: ['S', 'M', 'L'],
-      category: 'Category 2',
-      rating: 4.0,
-      images: [
-        {
-          url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/de85919a47b137ba4a7ac34606944003414f41702edacf80ef7c795a37aaddd3?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-        }
-      ],
-      imageSrc:
-        'https://cdn.builder.io/api/v1/image/assets/TEMP/de85919a47b137ba4a7ac34606944003414f41702edacf80ef7c795a37aaddd3?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-    },
-    {
-      id: '6',
-      name: 'Gemstone Bracelet',
-      description:
-        'Lorem ipsum dolor sit amet consectetur. Dolor et volutpat in non. Luctus sit libero urna viverra sed non dui elementum Dolor et volutpat in non. Luctus sit libero urna viverra .',
-      price: '$680.90',
-      sizes: ['S', 'M', 'L'],
-      category: 'Category 1',
-      rating: 4.0,
-      images: [
-        {
-          url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/31b69bfee0eac0dfc09e08e8a402b9339c0fd0915058c81a216a854851824ca9?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-        }
-      ],
-      imageSrc:
-        'https://cdn.builder.io/api/v1/image/assets/TEMP/31b69bfee0eac0dfc09e08e8a402b9339c0fd0915058c81a216a854851824ca9?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-    }
-  ];
   return (
     <Fragment>
       {loading ? (
@@ -185,7 +86,12 @@ const Products = () => {
         />
       ) : (
         <Fragment>
-          <h2 className='text-2xl font-bold my-4'>All Products</h2>
+          <button
+            onClick={resetFilters}
+            className='text-2xl font-bold my-4 hover:underline'
+          >
+            All Products
+          </button>
           <div className='flex'>
             {/* Filters Section */}
             <div className='w-1/6 p-4 bg-gray-100 rounded-md shadow-md'>
@@ -218,7 +124,7 @@ const Products = () => {
               </div>
               <h4 className='text-md'>Categories</h4>
               <div className='flex flex-col mb-4'>
-                {getUniqueCategories(dummyProducts).map(category => (
+                {getUniqueCategories(products).map(category => (
                   <button
                     className={`px-4 py-2 border rounded-md mb-1 cursor-pointer hover:bg-blue-500 hover:text-white ${
                       category === selectedCategory
@@ -263,8 +169,8 @@ const Products = () => {
             {/* Products Section */}
             <div className='w-3/4 p-4'>
               <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                {dummyProducts &&
-                  dummyProducts.map(product => (
+                {products &&
+                  products.map(product => (
                     <ProductGridItem key={product.id} product={product} />
                   ))}
               </div>
@@ -275,7 +181,7 @@ const Products = () => {
                     <ul className='flex space-x-2'>
                       {[
                         ...Array(
-                          Math.ceil(productsCount / resultPerPage)
+                          Math.ceil(productsCount / (resultPerPage || 10))
                         ).keys()
                       ].map(number => (
                         <li key={number}>

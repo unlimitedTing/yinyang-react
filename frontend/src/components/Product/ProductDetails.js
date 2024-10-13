@@ -65,6 +65,7 @@ const ProductDetails = () => {
   };
 
   const addToCartHandler = () => {
+    console.log(id);
     dispatch(addItemsToCart(id, quantity));
     toast.success('Item Added To Cart');
     setProgress(progress + 80);

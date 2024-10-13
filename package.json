@@ -6,7 +6,8 @@
     "scripts": {
         "start": "node backend/server.js",
         "dev": "nodemon backend/server.js --ignore frontend",
-        "test": "mocha 'backend/test/unit/user.test.js'"
+        "test": "mocha 'backend/test/unit/user.test.js'",
+        "seeder": "node backend/utils/seeder.js"
     },
     "author": "Eric",
     "license": "ISC",

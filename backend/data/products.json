@@ -1,0 +1,193 @@
+[
+    {
+      "id": "1",
+      "name": "Silver Ring",
+      "description": "Lorem ipsum dolor sit amet consectetur. Dolor et volutpat in non. Luctus sit libero urna viverra sed non dui elementum.",
+      "price": 280.90,
+      "ratings": 4.0,
+      "images": [
+        {
+          "_id": "img1",
+          "url": "https://cdn.builder.io/api/v1/image/assets/TEMP/de85919a47b137ba4a7ac34606944003414f41702edacf80ef7c795a37aaddd3"
+        }
+      ],
+      "user": 1,
+      "category": "Ring",
+      "Stock": 50,
+      "numOfReviews": 0,
+      "reviews": [],
+      "createdAt": "2024-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "name": "Gemstone Bracelet",
+      "description": "Lorem ipsum dolor sit amet consectetur. Dolor et volutpat in non. Luctus sit libero urna viverra sed non dui elementum.",
+      "price": 680.90,
+      "ratings": 4.0,
+      "images": [
+        {
+          "_id": "img2",
+          "url": "https://cdn.builder.io/api/v1/image/assets/TEMP/31b69bfee0eac0dfc09e08e8a402b9339c0fd0915058c81a216a854851824ca9"
+        }
+      ],
+      "user": 1,
+      "category": "Bracelet",
+      "Stock": 30,
+      "numOfReviews": 0,
+      "reviews": [],
+      "createdAt": "2024-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "name": "Pearl Necklace",
+      "description": "Beautiful pearl necklace with a touch of elegance. Perfect for formal occasions.",
+      "price": 350.50,
+      "ratings": 4.5,
+      "images": [
+        {
+          "_id": "img3",
+          "url": "https://cdn.builder.io/api/v1/image/assets/TEMP/e3b219478cfc7ba4a7b34606944003414f41702edac80ef7c795a37addd3"
+        }
+      ],
+      "user": 1,
+      "category": "Necklace",
+      "Stock": 20,
+      "numOfReviews": 0,
+      "reviews": [],
+      "createdAt": "2024-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "4",
+      "name": "Gold Ring",
+      "description": "A classic gold ring with intricate designs. Ideal for everyday wear and special occasions.",
+      "price": 299.99,
+      "ratings": 4.7,
+      "images": [
+        {
+          "_id": "img4",
+          "url": "https://cdn.builder.io/api/v1/image/assets/TEMP/dc9819a47b137ba4a7b34606944003414f41702edacf80ef7c795a37addd3"
+        }
+      ],
+      "user": 1,
+      "category": "Ring",
+      "Stock": 60,
+      "numOfReviews": 0,
+      "reviews": [],
+      "createdAt": "2024-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "5",
+      "name": "Charm Anklet",
+      "description": "Elegant anklet with various charms. Adds a stylish touch to any outfit.",
+      "price": 120.00,
+      "ratings": 4.3,
+      "images": [
+        {
+          "_id": "img5",
+          "url": "https://cdn.builder.io/api/v1/image/assets/TEMP/12c219478cfc7ba4a7b34606944003414f41702edac80ef7c795a37addd3"
+        }
+      ],
+      "user": 1,
+      "category": "Anklet",
+      "Stock": 40,
+      "numOfReviews": 0,
+      "reviews": [],
+      "createdAt": "2024-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "6",
+      "name": "Leather Bracelet",
+      "description": "Stylish leather bracelet perfect for casual wear. A great accessory for any look.",
+      "price": 89.90,
+      "ratings": 4.1,
+      "images": [
+        {
+          "_id": "img6",
+          "url": "https://cdn.builder.io/api/v1/image/assets/TEMP/cc6319a47b137ba4a7b34606944003414f41702edac80ef7c795a37addd3"
+        }
+      ],
+      "user": 1,
+      "category": "Bracelet",
+      "Stock": 25,
+      "numOfReviews": 0,
+      "reviews": [],
+      "createdAt": "2024-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "7",
+      "name": "Diamond Stud Earrings",
+      "description": "Exquisite diamond stud earrings that add elegance to any occasion.",
+      "price": 560.00,
+      "ratings": 4.9,
+      "images": [
+        {
+          "_id": "img7",
+          "url": "https://cdn.builder.io/api/v1/image/assets/TEMP/abb319478cfc7ba4a7b34606944003414f41702edac80ef7c795a37addd3"
+        }
+      ],
+      "user": 1,
+      "category": "Earrings",
+      "Stock": 15,
+      "numOfReviews": 0,
+      "reviews": [],
+      "createdAt": "2024-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "8",
+      "name": "Platinum Necklace",
+      "description": "Luxurious platinum necklace with a minimalist design. A timeless addition to any wardrobe.",
+      "price": 1500.00,
+      "ratings": 5.0,
+      "images": [
+        {
+          "_id": "img8",
+          "url": "https://cdn.builder.io/api/v1/image/assets/TEMP/ff4819a47b137ba4a7b34606944003414f41702edac80ef7c795a37addd3"
+        }
+      ],
+      "user": 1,
+      "category": "Necklace",
+      "Stock": 10,
+      "numOfReviews": 0,
+      "reviews": [],
+      "createdAt": "2024-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "9",
+      "name": "Gold Bangle",
+      "description": "Classic gold bangle that pairs well with formal or casual attire. A must-have accessory.",
+      "price": 320.75,
+      "ratings": 4.6,
+      "images": [
+        {
+          "_id": "img9",
+          "url": "https://cdn.builder.io/api/v1/image/assets/TEMP/yy2819a47b137ba4a7b34606944003414f41702edac80ef7c795a37addd3"
+        }
+      ],
+      "user": 1,
+      "category": "Bangle",
+      "Stock": 35,
+      "numOfReviews": 0,
+      "reviews": [],
+      "createdAt": "2024-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "10",
+      "name": "Silver Cufflinks",
+      "description": "Elegant silver cufflinks that enhance any formal attire with sophistication.",
+      "price": 220.00,
+      "ratings": 4.4,
+      "images": [
+        {
+          "_id": "img10",
+          "url": "https://cdn.builder.io/api/v1/image/assets/TEMP/gg7619a47b137ba4a7b34606944003414f41702edac80ef7c795a37addd3"
+        }
+      ],
+      "user": 1,
+      "category": "Cufflinks",
+      "Stock": 45,
+      "numOfReviews": 0,
+      "reviews": [],
+      "createdAt": "2024-10-10T00:00:00.000Z"
+    }
+  ]
+  

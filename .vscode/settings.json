@@ -4,5 +4,6 @@
     "prettier.arrowParens": "avoid",
     "prettier.jsxSingleQuote": true,
     "prettier.trailingComma": "none",
-    "javascript.preferences.quoteStyle": "single"
+    "javascript.preferences.quoteStyle": "single",
+    "git.ignoreLimitWarning": true
 }

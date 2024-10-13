@@ -78,12 +78,15 @@ export const getProduct =
     try {
       dispatch({ type: ALL_PRODUCT_REQUEST });
 
-      // Simulate an API response with dummy data
-      const data = {
-        products: dummyProducts,
-        totalCount: dummyProducts.length
-      };
+      let link = `/api/v1/products?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}`;
 
+      if (category) {
+        link = `/api/v1/products?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&category=${category}&ratings[gte]=${ratings}`;
+      }
+
+      const { data } = await axios.get(link);
+      console.log('data');
+      console.log(data);
       dispatch({
         type: ALL_PRODUCT_SUCCESS,
         payload: data
@@ -275,19 +278,17 @@ export const deleteReviews = (reviewId, productId) => async dispatch => {
   }
 };
 
-// Fetch Wishlist (Mocked)
+// Fetch Wishlist
 export const fetchWishlist = () => async dispatch => {
   try {
     dispatch({ type: ALL_WISHLIST_PRODUCTS_REQUEST });
 
-    // Simulate an API response with dummy wishlist data
-    const wishlistData = {
-      wishlistProducts: []
-    };
+    const storedWishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    console.log('Fetched from localStorage:', storedWishlist);
 
     dispatch({
       type: ALL_WISHLIST_PRODUCTS_SUCCESS,
-      payload: wishlistData.wishlistProducts
+      payload: storedWishlist
     });
   } catch (error) {
     dispatch({
@@ -297,7 +298,7 @@ export const fetchWishlist = () => async dispatch => {
   }
 };
 
-// Add Product to Wishlist (Mocked)
+// Add Product to Wishlist
 export const addProductToWishlist = id => async dispatch => {
   try {
     dispatch({ type: ADD_PRODUCT_TO_WISHLIST_REQUEST });

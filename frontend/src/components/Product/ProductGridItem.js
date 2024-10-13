@@ -48,7 +48,7 @@ const ProductGridItem = ({ product }) => {
           <div className='absolute inset-0 bg-white p-4 flex flex-col justify-center items-start opacity-95 rounded-b-lg'>
             <h3 className='font-bold text-lg mb-2'>{product.name}</h3>
             <p className='mb-2'>{product.description}</p>
-            <span className='text-xl font-semibold mb-2'>{`₹${product.price}`}</span>
+            <span className='text-xl font-semibold mb-2'>{`$${product.price}`}</span>
             <div className='flex mb-2'>{renderRating()}</div>
             <span className='text-gray-500'>
               ({product.numOfReviews} Reviews)

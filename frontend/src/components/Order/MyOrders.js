@@ -15,7 +15,6 @@ const MyOrders = () => {
   const [progress, setProgress] = useState(0);
 
   const onLoaderFinished = () => setProgress(0);
-
   const columns = [
     { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.4 },
     {
@@ -73,7 +72,7 @@ const MyOrders = () => {
     }
   ];
 
-  const rows = orders
+  const rows = Array.isArray(orders)
     ? orders.map(item => ({
         itemsQty: item.orderItems.length,
         id: item._id,
