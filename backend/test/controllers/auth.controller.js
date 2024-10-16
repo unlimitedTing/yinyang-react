@@ -4,7 +4,7 @@ const stripe = require('stripe')(
 );
 
 async function registerUser(req) {
-  const { name, whatsappNumber, email, password } = req.body;
+  const { name, email, password } = req.body;
   const file = req.file;
 
   const customer = await stripe.customers.create({
@@ -13,7 +13,6 @@ async function registerUser(req) {
   });
   const user = await User.create({
     name,
-    whatsappNumber,
     email,
     password,
     stripeCustomerId: customer.id

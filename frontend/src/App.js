@@ -1,10 +1,9 @@
 // import Search from './components/Product/Search';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import axios from 'axios';
 import React, { Fragment, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import WebFont from 'webfontloader';
 
 import { loadUser } from './actions/userAction';
@@ -28,7 +27,6 @@ import Home from './components/Home/Home';
 import Contact from './components/Layout/Contact/Contact';
 import AdminHeader from './components/Layout/Header/AdminHeader';
 import MainHeader from './components/Layout/Header/MainHeader';
-// import Header from './components/Layout/Header/Header';
 import NotFound from './components/Layout/Not-Found/NotFound';
 import MyOrders from './components/Order/MyOrders';
 import OrderDetails from './components/Order/OrderDetails';
@@ -36,24 +34,20 @@ import ReturnRequest from './components/Order/ReturnRequest';
 import ProductDetails from './components/Product/ProductDetails';
 import Products from './components/Product/Products';
 import ForgotPassword from './components/User/ForgotPassword';
-import LoginAndRegister from './components/User/LoginAndRegister';
-// import LoginSignup from './components/User/LoginSignup';
 import Profile from './components/User/Profile';
 import ResetPassword from './components/User/ResetPassword';
-// import Signup from './components/User/Signup';
 import UpdatePassword from './components/User/UpdatePassword';
 import UpdateProfile from './components/User/UpdateProfile';
 import store from './store';
 
 import './App.css';
-// import MainFooter from './components/Layout/Footer/MainFooter';
 import PlusMembership from './components/Subscription/PlusMembership';
 import PaymentPlusMembership from './components/Subscription/PaymentPlusMembership';
 import Wishlist from './components/Product/Wishlist';
 
 import MainFooter from './components/Layout/Footer/MainFooter';
-import Footer from './components/Layout/Footer/Footer';
 import Login from './components/User/LoginAndRegister';
+import AdminRoute from './components/Admin/AdminRoute';
 
 /*
     TODO: #5 Sidebar for Admin Dashboard Not Visible
@@ -68,17 +62,12 @@ function App() {
 
   const [stripeApiKey, setStripeApiKey] = useState('');
 
-  const stripePromise = loadStripe(
-    'pk_test_51Q2yOQDy6xKOypJNx40jMtlDhHd2jAjYtEfjabMcFJaIiS2YKudhnrKJYpZuTjlevYt1sKRPhHRCNGutO9bB6s4V00xDxFPuVi'
-  );
+  const stripePromise = loadStripe(strip_public_key);
 
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   async function getStripeApiKey() {
-    // const { data } = await axios.get('/api/v1/stripeapikey');
-
-    // setStripeApiKey(data.stripeApiKey);
     setStripeApiKey(strip_public_key);
   }
 
@@ -175,108 +164,105 @@ function App() {
           />
         )}
       </Routes>
-      {/* {isAdminRoute && <Sidebar />} */}
+      {/* Admin Routes */}
       <Routes>
-        {/* Admin Routes */}
-        {isAuthenticated && (
-          <Route
-            isAdmin={true}
-            path='/admin/dashboard'
-            element={<Dashboard />}
-            exact
-          />
-        )}
+        {/* Redirect /admin to /admin/dashboard */}
+        <Route
+          path='/admin'
+          element={<Navigate to='/admin/dashboard' replace />}
+        />
 
-        {isAuthenticated && (
-          <Route
-            isAdmin={true}
-            path='/admin/products'
-            element={<ProductList />}
-            exact
-          />
-        )}
+        <Route
+          path='/admin/dashboard'
+          element={
+            <AdminRoute>
+              <Dashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/admin/products'
+          element={
+            <AdminRoute>
+              <ProductList />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/admin/add-product'
+          element={
+            <AdminRoute>
+              <NewProduct />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/admin/product/:id'
+          element={
+            <AdminRoute>
+              <UpdateProduct />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/admin/orders'
+          element={
+            <AdminRoute>
+              <OrderList />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/admin/order/:id'
+          element={
+            <AdminRoute>
+              <ProcessOrder />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/admin/users'
+          element={
+            <AdminRoute>
+              <UsersList />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/admin/user/:id'
+          element={
+            <AdminRoute>
+              <UpdateUser />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/admin/reviews'
+          element={
+            <AdminRoute>
+              <ProductReviews />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/admin/returns'
+          element={
+            <AdminRoute>
+              <ReturnList />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/admin/refunds'
+          element={
+            <AdminRoute>
+              <RefundList />
+            </AdminRoute>
+          }
+        />
 
-        {isAuthenticated && (
-          <Route
-            isAdmin={true}
-            path='/admin/add-product'
-            element={<NewProduct />}
-            exact
-          />
-        )}
-
-        {isAuthenticated && (
-          <Route
-            isAdmin={true}
-            path='/admin/product/:id'
-            element={<UpdateProduct />}
-            exact
-          />
-        )}
-
-        {isAuthenticated && (
-          <Route
-            isAdmin={true}
-            path='/admin/orders'
-            element={<OrderList />}
-            exact
-          />
-        )}
-
-        {isAuthenticated && (
-          <Route
-            isAdmin={true}
-            path='/admin/order/:id'
-            element={<ProcessOrder />}
-            exact
-          />
-        )}
-
-        {isAuthenticated && (
-          <Route
-            isAdmin={true}
-            path='/admin/users'
-            element={<UsersList />}
-            exact
-          />
-        )}
-
-        {isAuthenticated && (
-          <Route
-            isAdmin={true}
-            path='/admin/user/:id'
-            element={<UpdateUser />}
-            exact
-          />
-        )}
-
-        {isAuthenticated && (
-          <Route
-            isAdmin={true}
-            path='/admin/reviews'
-            element={<ProductReviews />}
-            exact
-          />
-        )}
-
-        {isAuthenticated && (
-          <Route
-            isAdmin={true}
-            path='/admin/returns'
-            element={<ReturnList />}
-            exact
-          />
-        )}
-
-        {isAuthenticated && (
-          <Route
-            isAdmin={true}
-            path='/admin/refunds'
-            element={<RefundList />}
-            exact
-          />
-        )}
-        {/*  */}
+        {/* 404 Route for undefined paths */}
+        <Route path='*' element={<NotFound />} />
 
         <Route
           element={location.pathname === '/payment' ? null : <NotFound />}
@@ -285,8 +271,7 @@ function App() {
         {/* Page Not Found Route */}
         {/* <Route path='/*' element={<NotFound />} /> */}
       </Routes>
-      {!isAdminRoute && <MainFooter />}
-      {isAdminRoute && <Footer />}
+      <MainFooter />
     </Fragment>
   );
 }

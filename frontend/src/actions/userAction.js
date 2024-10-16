@@ -50,7 +50,7 @@ export const login = (email, password) => async dispatch => {
       { email, password },
       { config }
     );
-
+    console.log(data.user);
     dispatch({ type: LOGIN_SUCCESS, payload: data.user });
   } catch (error) {
     dispatch({ type: LOGIN_FAIL, payload: error.response.data.message });
@@ -85,7 +85,7 @@ export const loadUser = () => async dispatch => {
     dispatch({ type: LOAD_USER_REQUEST });
 
     const { data } = await axios.get(`/api/v1/me`);
-
+    console.log(data.user);
     dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
   } catch (error) {
     dispatch({

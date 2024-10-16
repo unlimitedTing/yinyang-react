@@ -10,11 +10,14 @@ const Snowflake = require('@theinternetfolks/snowflake');
 
 const timestamp = Date.now();
 const timestampInSeconds = Math.floor(timestamp / 1000);
+const stripe = require('stripe')(
+  'sk_test_51Q2yOQDy6xKOypJNRMjGMpf7EwAyWZ0XXt0HnC418zImUZky7r29TwKYihLWEMWgo99vA6YIgQS1v4QU8m3mlPOY00hGffiDOz'
+);
 
 // register user
 exports.registerUser = async (req, res, next) => {
   try {
-    const { name, whatsappNumber, email, password } = req.body;
+    const { name, email, password } = req.body;
 
     const customer = await stripe.customers.create({
       email,
