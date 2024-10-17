@@ -261,12 +261,12 @@ function App() {
           }
         />
 
-        {/* 404 Route for undefined paths */}
-        <Route path='*' element={<NotFound />} />
-
+        {/* 404 Route for undefined paths
+        <Route path='*' element={<NotFound />} /> */}
+        {/* 
         <Route
           element={location.pathname === '/payment' ? null : <NotFound />}
-        />
+        /> */}
 
         {/* Page Not Found Route */}
         {/* <Route path='/*' element={<NotFound />} /> */}
