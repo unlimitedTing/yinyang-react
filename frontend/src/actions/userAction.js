@@ -36,7 +36,7 @@ import {
   USER_DETAILS_FAIL,
   CLEAR_ERRORS
 } from '../constants/userConstants';
-import axios from 'axios';
+import api from './axiosConfig';
 
 // Login
 export const login = (email, password) => async dispatch => {
@@ -45,7 +45,7 @@ export const login = (email, password) => async dispatch => {
 
     const config = { headers: { 'Content-Type': 'application/json' } };
 
-    const { data } = await axios.post(
+    const { data } = await api.post(
       `/api/v1/login`,
       { email, password },
       { config }
@@ -64,7 +64,7 @@ export const register = (name, email, password, avatar) => async dispatch => {
 
     const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 
-    const { data } = await axios.post(
+    const { data } = await api.post(
       `/api/v1/register`,
       { name, email, password, avatar },
       { config }
@@ -84,7 +84,7 @@ export const loadUser = () => async dispatch => {
   try {
     dispatch({ type: LOAD_USER_REQUEST });
 
-    const { data } = await axios.get(`/api/v1/me`);
+    const { data } = await api.get(`/api/v1/me`);
     console.log(data.user);
     dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
   } catch (error) {
@@ -98,7 +98,7 @@ export const loadUser = () => async dispatch => {
 // Logout User
 export const logout = () => async dispatch => {
   try {
-    await axios.get(`/api/v1/logout`);
+    await api.get(`/api/v1/logout`);
 
     dispatch({ type: LOGOUT_SUCCESS });
   } catch (error) {
@@ -113,7 +113,7 @@ export const updateProfile = (name, email, avatar) => async dispatch => {
 
     const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 
-    const { data } = await axios.put(
+    const { data } = await api.put(
       `/api/me/update`,
       { name, email, avatar },
       { config }
@@ -135,7 +135,7 @@ export const updatePassword = passwords => async dispatch => {
 
     const config = { headers: { 'Content-Type': 'application/json' } };
 
-    const { data } = await axios.put(`/api/v1/password/update`, passwords, {
+    const { data } = await api.put(`/api/v1/password/update`, passwords, {
       config
     });
 
@@ -155,7 +155,7 @@ export const forgotPassword = email => async dispatch => {
 
     const config = { headers: { 'Content-Type': 'application/json' } };
 
-    const { data } = await axios.post(`/api/v1/password/forgot`, email, {
+    const { data } = await api.post(`/api/v1/password/forgot`, email, {
       config
     });
 
@@ -175,7 +175,7 @@ export const resetPassword = (token, passwords) => async dispatch => {
 
     const config = { headers: { 'Content-Type': 'application/json' } };
 
-    const { data } = await axios.put(
+    const { data } = await api.put(
       `/api/v1/password/reset/${token}`,
       passwords,
       { config }
@@ -194,7 +194,7 @@ export const resetPassword = (token, passwords) => async dispatch => {
 export const getAllUsers = () => async dispatch => {
   try {
     dispatch({ type: ALL_USERS_REQUEST });
-    const { data } = await axios.get(`/api/v1/admin/users`);
+    const { data } = await api.get(`/api/v1/admin/users`);
 
     dispatch({ type: ALL_USERS_SUCCESS, payload: data.users });
   } catch (error) {
@@ -209,7 +209,7 @@ export const getAllUsers = () => async dispatch => {
 export const getUserDetails = id => async dispatch => {
   try {
     dispatch({ type: USER_DETAILS_REQUEST });
-    const { data } = await axios.get(`/api/v1/admin/user/${id}`);
+    const { data } = await api.get(`/api/v1/admin/user/${id}`);
 
     dispatch({ type: USER_DETAILS_SUCCESS, payload: data.user });
   } catch (error) {
@@ -227,7 +227,7 @@ export const updateUser = (id, userData) => async dispatch => {
 
     const config = { headers: { 'Content-Type': 'application/json' } };
 
-    const { data } = await axios.put(
+    const { data } = await api.put(
       `/api/v1/admin/user/${id}`,
       { userData },
       { config }
@@ -251,7 +251,7 @@ export const deleteUser = id => async dispatch => {
   try {
     dispatch({ type: DELETE_USER_REQUEST });
 
-    const { data } = await axios.delete(`/api/v1/admin/user/${id}`);
+    const { data } = await api.delete(`/api/v1/admin/user/${id}`);
 
     dispatch({ type: DELETE_USER_SUCCESS, payload: data.user });
   } catch (error) {

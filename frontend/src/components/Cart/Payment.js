@@ -10,7 +10,7 @@ import {
   useStripe,
   useElements
 } from '@stripe/react-stripe-js';
-import axios from 'axios';
+import api from './axiosConfig';
 import { createOrder, clearErrors } from '../../actions/orderAction';
 import { useNavigate } from 'react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -58,7 +58,7 @@ const Payment = () => {
           'Content-Type': 'application/json'
         }
       };
-      const { data } = await axios.post('api/v1/payment', paymentData, config);
+      const { data } = await api.post('api/v1/payment', paymentData, config);
 
       const client_secret = data.clientSecret;
 

@@ -1,41 +1,41 @@
-import axios from 'axios';
+import api from './axiosConfig';
 import {
-    CONTACT_REQUEST,
-    CONTACT_SUCCESS,
-    CONTACT_FAIL,
-    CLEAR_CONTACT,
-    CLEAR_ERRORS
+  CONTACT_REQUEST,
+  CONTACT_SUCCESS,
+  CONTACT_FAIL,
+  CLEAR_CONTACT,
+  CLEAR_ERRORS
 } from '../constants/contactConstants';
 
 export const submitContactForm = myForm => async dispatch => {
-    try {
-        dispatch({ type: CONTACT_REQUEST });
+  try {
+    dispatch({ type: CONTACT_REQUEST });
 
-        const config = {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        };
+    const config = {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
 
-        const { data } = await axios.post('/api/v1/contact-us', myForm, {
-            config
-        });
+    const { data } = await api.post('/api/v1/contact-us', myForm, {
+      config
+    });
 
-        dispatch({ type: CONTACT_SUCCESS, payload: data });
-    } catch (error) {
-        console.log('error', error);
-        dispatch({
-            type: CONTACT_FAIL,
-            payload: error.response.data.message
-        });
-    }
+    dispatch({ type: CONTACT_SUCCESS, payload: data });
+  } catch (error) {
+    console.log('error', error);
+    dispatch({
+      type: CONTACT_FAIL,
+      payload: error.response.data.message
+    });
+  }
 };
 
 export const clearContactForm = () => dispatch => {
-    dispatch({ type: CLEAR_CONTACT });
+  dispatch({ type: CLEAR_CONTACT });
 };
 
 // Clearing Errors
 export const clearErrors = () => async dispatch => {
-    dispatch({ type: CLEAR_ERRORS });
+  dispatch({ type: CLEAR_ERRORS });
 };
