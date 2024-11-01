@@ -25,6 +25,25 @@ const stripe = require('stripe')(
 const Snowflake = require('@theinternetfolks/snowflake');
 require('dotenv').config({ path: '/backend/config/config.env' });
 
+const cors = require('cors');
+
+const allowedOrigins = [
+  'https://yinyangfrontend.netlify.app' // your frontend domain on Netlify
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true // if you are using cookies
+};
+
+app.use(cors(corsOptions));
+
 app.use(cookieParser());
 app.use(express.json({ limit: '50mb' }));
 app.use(
@@ -95,13 +114,6 @@ app.use(async (req, res, next) => {
   res.header('Access-Control-Allow-Methods', '*');
   return next();
 });
-
-const corsOptions = {
-  origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
-
-app.use(cors(corsOptions));
 
 process.noDeprecation = true;
 
