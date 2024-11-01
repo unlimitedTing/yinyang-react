@@ -4,7 +4,7 @@ import {
   SAVE_SHIPPING_INFO,
   CLEAR_CART_ITEMS
 } from '../constants/cartConstants';
-import api from './axiosConfig';
+import api from '../axiosConfig';
 
 // Add to Cart
 export const addItemsToCart = (id, quantity) => async (dispatch, getState) => {

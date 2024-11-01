@@ -1,4 +1,4 @@
-import api from './axiosConfig';
+import api from '../axiosConfig';
 
 import {
   ADD_PRODUCT_TO_WISHLIST_FAIL,

@@ -10,7 +10,7 @@ import {
   useStripe,
   useElements
 } from '@stripe/react-stripe-js';
-import api from './axiosConfig';
+import api from '../../axiosConfig';
 import { createOrder, clearErrors } from '../../actions/orderAction';
 import { useNavigate } from 'react-router';
 import { FaCreditCard, FaCalendarAlt, FaKey } from 'react-icons/fa';

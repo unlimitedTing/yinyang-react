@@ -6,7 +6,7 @@ import {
   FETCH_COUPONS_REQUEST,
   FETCH_COUPONS_FAIL
 } from '../constants/couponConstants';
-import api from './axiosConfig';
+import api from '../axiosConfig';
 
 export const generateCoupon = (code, discount) => async dispatch => {
   try {

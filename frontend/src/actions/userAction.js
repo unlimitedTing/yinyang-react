@@ -36,7 +36,7 @@ import {
   USER_DETAILS_FAIL,
   CLEAR_ERRORS
 } from '../constants/userConstants';
-import api from './axiosConfig';
+import api from '../axiosConfig';
 
 // Login
 export const login = (email, password) => async dispatch => {

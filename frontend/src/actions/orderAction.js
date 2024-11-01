@@ -35,7 +35,7 @@ import {
   CLEAR_ERRORS
 } from '../constants/orderConstants';
 
-import api from './axiosConfig';
+import api from '../axiosConfig';
 
 // Create Order
 export const createOrder = order => async dispatch => {
