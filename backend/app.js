@@ -25,8 +25,6 @@ const stripe = require('stripe')(
 const Snowflake = require('@theinternetfolks/snowflake');
 require('dotenv').config({ path: '/backend/config/config.env' });
 
-const cors = require('cors');
-
 const allowedOrigins = [
   'https://yinyangfrontend.netlify.app' // your frontend domain on Netlify
 ];
