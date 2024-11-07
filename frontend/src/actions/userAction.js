@@ -83,8 +83,12 @@ export const register = (name, email, password, avatar) => async dispatch => {
 export const loadUser = () => async dispatch => {
   try {
     dispatch({ type: LOAD_USER_REQUEST });
-
-    const { data } = await api.get(`/api/v1/me`);
+    const token = getState().auth.token;
+    const { data } = await api.get('/api/v1/me', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     console.log(data.user);
     dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
   } catch (error) {

@@ -54,7 +54,8 @@ export const userReducer = (state = { user: {} }, action) => {
         ...state,
         loading: true,
         isAuthenticated: true,
-        user: action.payload // Make sure this payload contains user data
+        user: action.payload, // Make sure this payload contains user data
+        token: action.payload.token
       };
     case REGISTER_USER_SUCCESS:
       return {
