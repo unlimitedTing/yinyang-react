@@ -85,7 +85,7 @@ export const register = (name, email, password, avatar) => async dispatch => {
 export const loadUser = () => async dispatch => {
   try {
     dispatch({ type: LOAD_USER_REQUEST });
-    const token = getState().auth.token;
+    const token = localStorage.getItem('token');
     const { data } = await api.get('/api/v1/me', {
       headers: {
         Authorization: `Bearer ${token}`
