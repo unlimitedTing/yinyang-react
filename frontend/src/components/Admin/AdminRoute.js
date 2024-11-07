@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
 const AdminRoute = ({ children }) => {
@@ -8,6 +8,7 @@ const AdminRoute = ({ children }) => {
     console.warn("Warning: 'loading' state is undefined.");
     return <div>Loading...</div>;
   }
+  const dispatch = useDispatch();
 
   if (loading) return <div>Loading...</div>;
   useEffect(() => {
