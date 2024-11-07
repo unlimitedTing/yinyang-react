@@ -51,7 +51,7 @@ export const login = (email, password) => async dispatch => {
     const { data } = await api.post(
       `/api/v1/login`,
       { email, password },
-      { config }
+      config
     );
     console.log('login user', data.user);
     localStorage.setItem('token', data.token);
