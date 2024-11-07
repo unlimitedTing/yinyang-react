@@ -10,6 +10,11 @@ const AdminRoute = ({ children }) => {
   }
 
   if (loading) return <div>Loading...</div>;
+  useEffect(() => {
+    if (!user) {
+      dispatch(loadUser());
+    }
+  }, [user, dispatch]);
   console.log(user);
   console.log('Loading', loading);
   console.log(isAuthenticated);
