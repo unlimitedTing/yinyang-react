@@ -85,14 +85,9 @@ export const register = (name, email, password, avatar) => async dispatch => {
 export const loadUser = () => async dispatch => {
   try {
     dispatch({ type: LOAD_USER_REQUEST });
-    const token = localStorage.getItem('token');
-    const { data } = await api.get('/api/v1/me', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const user = JSON.parse(localStorage.getItem('user'));
     console.log('loading user', data.user);
-    dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
+    dispatch({ type: LOAD_USER_SUCCESS, payload: user });
   } catch (error) {
     dispatch({
       type: LOAD_USER_FAIL,
