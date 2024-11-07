@@ -54,7 +54,6 @@ export const login = (email, password) => async dispatch => {
       config
     );
     console.log('login user', data.user);
-    localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
     dispatch({ type: LOGIN_SUCCESS, payload: data.user });
   } catch (error) {
@@ -89,12 +88,12 @@ export const loadUser = () => async dispatch => {
   try {
     dispatch({ type: LOAD_USER_REQUEST });
     const user = JSON.parse(localStorage.getItem('user'));
-    console.log('loading user', data.user);
+    console.log('loading user', user);
     dispatch({ type: LOAD_USER_SUCCESS, payload: user });
   } catch (error) {
     dispatch({
       type: LOAD_USER_FAIL,
-      payload: error.response?.data?.message || 'Failed to load user data'
+      payload: error
     });
   }
 };
