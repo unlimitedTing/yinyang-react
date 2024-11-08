@@ -126,7 +126,9 @@ export const getAdminProduct = () => async dispatch => {
     dispatch({ type: ADMIN_PRODUCT_REQUEST });
 
     // This part can be mocked as well if needed
-    const { data } = await api.get('/api/v1/admin/products');
+    const { data } = await api.get('/api/v1/admin/products', {
+      withCredentials: true
+    });
 
     dispatch({
       type: ADMIN_PRODUCT_SUCCESS,
