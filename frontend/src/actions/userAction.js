@@ -43,16 +43,7 @@ export const login = (email, password) => async dispatch => {
   try {
     dispatch({ type: LOGIN_REQUEST });
 
-    const config = {
-      headers: { 'Content-Type': 'application/json' },
-      withCredentials: true
-    };
-
-    const { data } = await api.post(
-      `/api/v1/login`,
-      { email, password },
-      config
-    );
+    const { data } = await api.post(`/api/v1/login`, { email, password });
     console.log('login user', data.user);
     localStorage.setItem('user', JSON.stringify(data.user));
     dispatch({ type: LOGIN_SUCCESS, payload: data.user });
