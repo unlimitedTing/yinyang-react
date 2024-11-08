@@ -147,13 +147,7 @@ export const createProduct = productData => async dispatch => {
   try {
     dispatch({ type: NEW_PRODUCT_REQUEST });
 
-    const config = {
-      headers: { 'Content-Type': 'application/json' }
-    };
-
-    const { data } = await api.post(`/admin/add-product`, productData, {
-      config
-    });
+    const { data } = await api.post(`/admin/add-product`, productData);
 
     dispatch({
       type: NEW_PRODUCT_SUCCESS,
