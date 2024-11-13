@@ -46,7 +46,7 @@ const Profile = () => {
                 margin: '10px auto',
                 textAlign: 'center',
                 fontSize: '18px',
-                color: '#007BFF',
+                color: 'black',
                 textDecoration: 'none'
               }}
             >
