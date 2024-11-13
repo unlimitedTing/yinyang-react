@@ -55,7 +55,6 @@ const Profile = () => {
             <div>
               <h1>My Profile</h1>
               <img src={user.avatar} alt={user.name} />
-              <Link to='/me/update'>Edit Profile</Link>
             </div>
             <div>
               <div>

@@ -22,25 +22,10 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 const ProductDetails = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
+  const { product, loading, error } = useSelector(
+    state => state.productDetails
+  );
 
-  const { loading, error } = useSelector(state => state.productDetails);
-  const product = {
-    id: '1',
-    name: 'Silver Ring',
-    description:
-      'Lorem ipsum dolor sit amet consectetur. Dolor et volutpat in non. Luctus sit libero urna viverra sed non dui elementum Dolor et volutpat in non. Luctus sit libero urna viverra .',
-    price: '$280.90',
-    sizes: ['S', 'M', 'L'],
-    category: 'Category 2',
-    ratings: 4.0,
-    images: [
-      {
-        url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/de85919a47b137ba4a7ac34606944003414f41702edacf80ef7c795a37aaddd3?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-      }
-    ],
-    imageSrc:
-      'https://cdn.builder.io/api/v1/image/assets/TEMP/de85919a47b137ba4a7ac34606944003414f41702edacf80ef7c795a37aaddd3?placeholderIfAbsent=true&apiKey=a7f37bd336bb4767a5dc599b61a73e60'
-  };
   const { wishlist } = useSelector(state => state.wishlist);
   const { success, error: reviewError } = useSelector(state => state.newReview);
 
