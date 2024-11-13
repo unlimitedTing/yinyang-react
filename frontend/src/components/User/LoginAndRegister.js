@@ -32,9 +32,6 @@ const LoginAndRegister = () => {
   const { name, email, password } = user;
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
 
-  const [avatar, setAvatar] = useState('/Profile.png');
-  const [avatarPreview, setAvatarPreview] = useState('/Profile.png');
-
   const loginSubmit = e => {
     e.preventDefault();
     setProgress(50);
@@ -49,25 +46,11 @@ const LoginAndRegister = () => {
     myForm.set('name', name);
     myForm.set('email', email);
     myForm.set('password', password);
-    myForm.set('avatar', avatar);
     dispatch(register(myForm));
   };
 
   const registerDataChange = e => {
-    if (e.target.name === 'avatar') {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setAvatarPreview(reader.result);
-          setAvatar(reader.result);
-        }
-      };
-
-      reader.readAsDataURL(e.target.files[0]);
-    } else {
-      setUser({ ...user, [e.target.name]: e.target.value });
-    }
+    setUser({ ...user, [e.target.name]: e.target.value });
   };
 
   useEffect(() => {
@@ -168,7 +151,6 @@ const LoginAndRegister = () => {
               <form
                 className='signUpForm'
                 ref={registerTab}
-                encType='multipart/form-data'
                 onSubmit={registerSubmit}
               >
                 <div className='flex items-center border-b mb-4'>
@@ -214,15 +196,6 @@ const LoginAndRegister = () => {
                   >
                     {showRegisterPassword ? <FaEye /> : <FaEyeSlash />}
                   </span>
-                </div>
-                <div id='registerImage' className='mb-4'>
-                  <input
-                    type='file'
-                    name='avatar'
-                    accept='image/*'
-                    onChange={registerDataChange}
-                    className='p-2 border border-gray-300 rounded'
-                  />
                 </div>
                 <input
                   type='submit'

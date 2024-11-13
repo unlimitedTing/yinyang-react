@@ -54,7 +54,6 @@ const Profile = () => {
             </Link>
             <div>
               <h1>My Profile</h1>
-              <img src={user.avatar} alt={user.name} />
             </div>
             <div>
               <div>
