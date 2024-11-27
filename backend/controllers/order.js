@@ -165,7 +165,7 @@ exports.getAllOrders = async (req, res, next) => {
     orders = await Order.find();
     NodeCache.set('orders', JSON.stringify(orders));
   }
-
+  orders = Array.isArray(orders) ? orders : [];
   orders.forEach(order => {
     totalAmount += order.totalPrice;
   });
