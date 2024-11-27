@@ -6,7 +6,6 @@ const crypto = require('crypto');
 mongoose.set('strictQuery', false);
 
 const userSchema = new mongoose.Schema({
-  _id: String,
   name: {
     type: String,
     required: [true, 'Please Enter Your Name'],
