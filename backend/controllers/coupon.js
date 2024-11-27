@@ -1,7 +1,6 @@
 const Coupon = require('../models/coupon');
 const nodeCache = require('node-cache');
 const NodeCache = new nodeCache();
-const Snowflake = require('@theinternetfolks/snowflake');
 
 const timestamp = Date.now();
 const timestampInSeconds = Math.floor(timestamp / 1000);
@@ -12,9 +11,6 @@ exports.generateCoupon = async (req, res, next) => {
     const { code, discount } = req.body;
 
     const coupon = await Coupon.create({
-      _id: Snowflake.Snowflake.generate({
-        timestamp: timestampInSeconds
-      }),
       code,
       discount,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)

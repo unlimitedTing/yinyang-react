@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config({ path: 'backend/config/config.env' });
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { fromEnv } = require('@aws-sdk/credential-provider-env');
-const Snowflake = require('@theinternetfolks/snowflake');
 
 const timestamp = Date.now();
 const timestampInSeconds = Math.floor(timestamp / 1000);
@@ -25,9 +24,6 @@ exports.registerUser = async (req, res, next) => {
     });
 
     const user = await User.create({
-      _id: Snowflake.Snowflake.generate({
-        timestamp: timestampInSeconds
-      }),
       name,
       email,
       password,

@@ -3,7 +3,6 @@ const stripe = require('stripe')(
   'sk_test_51Q2yOQDy6xKOypJNRMjGMpf7EwAyWZ0XXt0HnC418zImUZky7r29TwKYihLWEMWgo99vA6YIgQS1v4QU8m3mlPOY00hGffiDOz'
 );
 const Subscription = require('../models/plusMembership');
-const Snowflake = require('@theinternetfolks/snowflake');
 
 const timestamp = Date.now();
 const timestampInSeconds = Math.floor(timestamp / 1000);
@@ -31,9 +30,6 @@ exports.createSubscription = async (req, res, next) => {
     const { subscriptionId, name, description, amount, duration } = req.body;
 
     const subscription = Subscription.create({
-      _id: Snowflake.Snowflake.generate({
-        timestamp: timestampInSeconds
-      }),
       subscriptionId,
       name,
       description,
@@ -186,9 +182,6 @@ exports.plusSubscription_monthly = async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.user._id });
     const subscription = await stripe.subscriptions.create({
-      _id: Snowflake.Snowflake.generate({
-        timestamp: timestampInSeconds
-      }),
       customer: user.stripeCustomerId,
       items: [{ price: 'price_1NqBy5SDvITsgzEydDy964tk' }]
     });
@@ -219,9 +212,6 @@ exports.plusSubscription_every3months = async (req, res, next) => {
   try {
     // Create the subscription
     const subscription = await stripe.subscriptions.create({
-      _id: Snowflake.Snowflake.generate({
-        timestamp: timestampInSeconds
-      }),
       customer: req.user._id,
       items: [{ price: 'price_1NqFbMSDvITsgzEyDQq1f4En' }]
     });
@@ -252,9 +242,6 @@ exports.plusSubscription_yearly = async (req, res, next) => {
   try {
     // Create the subscription
     const subscription = await stripe.subscriptions.create({
-      _id: Snowflake.Snowflake.generate({
-        timestamp: timestampInSeconds
-      }),
       customer: req.user._id,
       items: [{ price: 'price_1NqBxlSDvITsgzEybWFmkGg' }]
     });

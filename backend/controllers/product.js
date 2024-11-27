@@ -1,7 +1,6 @@
 const Product = require('../models/product');
 const User = require('../models/user');
 const ApiFeatures = require('../utils/apifeatures');
-const Snowflake = require('@theinternetfolks/snowflake');
 
 const timestamp = Date.now();
 const timestampInSeconds = Math.floor(timestamp / 1000);
@@ -89,9 +88,6 @@ exports.createProductReview = async (req, res, next) => {
   let review;
   const { rating, comment, productId } = req.body;
   review = {
-    _id: Snowflake.Snowflake.generate({
-      timestamp: timestampInSeconds
-    }),
     user: req.user._id,
     name: req.user.name,
     rating: Number(rating),
@@ -187,9 +183,6 @@ exports.addToWishList = async (req, res) => {
     }
 
     const wishlistItem = {
-      _id: Snowflake.Snowflake.generate({
-        timestamp: timestampInSeconds
-      }),
       product: req.params.id,
       name: product.name,
       description: product.description,

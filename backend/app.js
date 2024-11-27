@@ -22,7 +22,6 @@ const jwt = require('jsonwebtoken');
 const stripe = require('stripe')(
   'sk_test_51Q2yOQDy6xKOypJNRMjGMpf7EwAyWZ0XXt0HnC418zImUZky7r29TwKYihLWEMWgo99vA6YIgQS1v4QU8m3mlPOY00hGffiDOz'
 );
-const Snowflake = require('@theinternetfolks/snowflake');
 require('dotenv').config({ path: '/backend/config/config.env' });
 
 const allowedOrigins = [
@@ -138,9 +137,6 @@ app.post('/register', async (req, res) => {
     });
 
     const user = await User.create({
-      _id: Snowflake.Snowflake.generate({
-        timestamp: timestampInSeconds
-      }),
       name,
       email,
       password,
@@ -314,9 +310,6 @@ app.post(
 
       // Create a new product in the database
       const product = await Product.create({
-        _id: Snowflake.Snowflake.generate({
-          timestamp: timestampInSeconds
-        }),
         name,
         description,
         price,
