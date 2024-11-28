@@ -53,7 +53,7 @@ export const login = (email, password) => async dispatch => {
 };
 
 // Register
-export const register = (name, email, password, avatar) => async dispatch => {
+export const register = (name, email, password) => async dispatch => {
   try {
     dispatch({ type: REGISTER_USER_REQUEST });
 
@@ -64,7 +64,7 @@ export const register = (name, email, password, avatar) => async dispatch => {
     formData.append('name', name);
     formData.append('email', email);
     formData.append('password', password);
-    formData.append('avatar', avatar);
+    console.log(formData);
 
     // Send the request
     const { data } = await api.post(`/api/v1/register`, formData, config);
