@@ -225,57 +225,50 @@ const getImageKeyFromUrl = imageUrl => {
   return key;
 };
 
-app.delete(
-  '/admin/user/:id',
-  isAuthUser,
-  authRoles('admin'),
-  async (req, res) => {
-    try {
-      const userId = req.params.id;
-      const user = await User.findById(userId);
+app.delete('/admin/user/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
 
-      if (!user) {
-        return res.status(404).json({ error: '⚠️ User not found' });
-      }
-
-      // Initialize S3 client
-      const s3 = new S3Client({
-        region: process.env.AWS_BUCKET_REGION,
-        credentials: fromEnv()
-      });
-
-      // Delete image from AWS S3
-      const imageKey = getImageKeyFromUrl(user.avatar);
-      const deleteParams = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: imageKey
-      };
-
-      // Delete the object from S3
-      await s3.send(new DeleteObjectCommand(deleteParams));
-
-      console.log('✅ Image deleted from AWS S3');
-
-      // Delete user from MongoDB
-      await User.findByIdAndDelete(userId);
-
-      console.log('✅ User deleted from MongoDB:', user);
-
-      return res.status(200).json({
-        success: true,
-        message: '✅ Profile deleted successfully.'
-      });
-    } catch (error) {
-      console.error('⚠️ Error processing request:', error);
-      return res.status(500).json({ error: '⚠️ Internal server error.' });
+    if (!user) {
+      return res.status(404).json({ error: '⚠️ User not found' });
     }
+
+    // Initialize S3 client
+    const s3 = new S3Client({
+      region: process.env.AWS_BUCKET_REGION,
+      credentials: fromEnv()
+    });
+
+    // Delete image from AWS S3
+    const imageKey = getImageKeyFromUrl(user.avatar);
+    const deleteParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: imageKey
+    };
+
+    // Delete the object from S3
+    await s3.send(new DeleteObjectCommand(deleteParams));
+
+    console.log('✅ Image deleted from AWS S3');
+
+    // Delete user from MongoDB
+    await User.findByIdAndDelete(userId);
+
+    console.log('✅ User deleted from MongoDB:', user);
+
+    return res.status(200).json({
+      success: true,
+      message: '✅ Profile deleted successfully.'
+    });
+  } catch (error) {
+    console.error('⚠️ Error processing request:', error);
+    return res.status(500).json({ error: '⚠️ Internal server error.' });
   }
-);
+});
 
 app.post(
   '/admin/add-product',
-  isAuthUser,
-  authRoles('admin'),
   upload.array('product', 10),
   async (req, res) => {
     try {
@@ -339,152 +332,141 @@ app.post(
   }
 );
 
-app.put(
-  '/admin/product/:id',
-  isAuthUser,
-  authRoles('admin'),
-  upload.array('product', 10),
-  async (req, res) => {
-    try {
-      const productId = req.params.id;
-      const { name, description, price, category, stock } = req.body;
-      const files = req.files;
+app.put('/admin/product/:id', upload.array('product', 10), async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { name, description, price, category, stock } = req.body;
+    const files = req.files;
 
-      let imageUrls = [];
+    let imageUrls = [];
 
-      const product = await Product.findById(productId);
+    const product = await Product.findById(productId);
 
-      if (!product) {
-        return res.status(404).json({ error: '⚠️ Product not found' });
+    if (!product) {
+      return res.status(404).json({ error: '⚠️ Product not found' });
+    }
+
+    // Initialize S3 client
+    const s3 = new S3Client({
+      region: process.env.AWS_BUCKET_REGION,
+      credentials: fromEnv()
+    });
+
+    // Delete images from AWS S3
+    const deleteObjects = product.images.map(image => ({
+      Key: getImageKeyFromUrl(image.url)
+    }));
+    const deleteParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Delete: {
+        Objects: deleteObjects,
+        Quiet: false
       }
+    };
+    const deleteObject = new DeleteObjectCommand(deleteParams);
+    await s3.send(deleteObject);
 
-      // Initialize S3 client
-      const s3 = new S3Client({
-        region: process.env.AWS_BUCKET_REGION,
-        credentials: fromEnv()
-      });
+    console.log('✅ Images deleted from AWS S3');
 
-      // Delete images from AWS S3
-      const deleteObjects = product.images.map(image => ({
-        Key: getImageKeyFromUrl(image.url)
-      }));
-      const deleteParams = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Delete: {
-          Objects: deleteObjects,
-          Quiet: false
-        }
-      };
-      const deleteObject = new DeleteObjectCommand(deleteParams);
-      await s3.send(deleteObject);
+    // Upload new images
+    const uploadParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: `${productId}-${files.originalname}`,
+      Body: files.buffer,
+      ContentType: files.mimetype
+    };
 
-      console.log('✅ Images deleted from AWS S3');
+    for (const file of files) {
+      uploadParams.Key = file.originalname;
+      uploadParams.ContentType = file.mimetype;
+      uploadParams.Body = file.buffer;
 
-      // Upload new images
-      const uploadParams = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `${productId}-${files.originalname}`,
-        Body: files.buffer,
-        ContentType: files.mimetype
-      };
+      await s3.send(new UploadPartCommand(uploadParams));
 
-      for (const file of files) {
-        uploadParams.Key = file.originalname;
-        uploadParams.ContentType = file.mimetype;
-        uploadParams.Body = file.buffer;
+      const cacheBuster = Date.now();
+      const avatarUrl = `https://${uploadParams.Bucket}.s3.${process.env.AWS_BUCKET_REGION}.amazonaws.com/${uploadParams.Key}?cacheBuster=${cacheBuster}`;
 
-        await s3.send(new UploadPartCommand(uploadParams));
-
-        const cacheBuster = Date.now();
-        const avatarUrl = `https://${uploadParams.Bucket}.s3.${process.env.AWS_BUCKET_REGION}.amazonaws.com/${uploadParams.Key}?cacheBuster=${cacheBuster}`;
-
-        imageUrls.push({
-          key: file.originalname,
-          url: avatarUrl
-        });
-      }
-
-      // Update the product in the database
-      const updatedProduct = await Product.findByIdAndUpdate(
-        productId,
-        {
-          name,
-          description,
-          price,
-          category,
-          stock,
-          images: imageUrls
-        },
-        { new: true }
-      );
-
-      if (!updatedProduct) {
-        return res.status(404).json({ error: '⚠️⚠️ Product not found.' });
-      }
-
-      res.status(200).json({
-        message: '✅ Product updated successfully.',
-        product: updatedProduct
-      });
-    } catch (error) {
-      console.error('⚠️ Error processing request:', error);
-      res.status(500).json({
-        success: false,
-        error: '⚠️ Internal server error.'
+      imageUrls.push({
+        key: file.originalname,
+        url: avatarUrl
       });
     }
-  }
-);
 
-app.delete(
-  '/admin/product/:id',
-  isAuthUser,
-  authRoles('admin'),
-  async (req, res) => {
-    try {
-      const productId = req.params.id;
-      const product = await Product.findById(productId);
+    // Update the product in the database
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      {
+        name,
+        description,
+        price,
+        category,
+        stock,
+        images: imageUrls
+      },
+      { new: true }
+    );
 
-      if (!product) {
-        return res.status(404).json({ error: '⚠️ Product not found' });
-      }
-
-      // Initialize S3 client
-      const s3 = new S3Client({
-        region: process.env.AWS_BUCKET_REGION,
-        credentials: fromEnv()
-      });
-
-      // Delete images from AWS S3
-      const deleteObjects = product.images.map(image => ({
-        Key: getImageKeyFromUrl(image.url)
-      }));
-      const deleteParams = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Delete: {
-          Objects: deleteObjects,
-          Quiet: false
-        }
-      };
-      await s3.send(new DeleteObjectsCommand(deleteParams));
-
-      console.log('✅ Images deleted from AWS S3');
-
-      // Delete product from MongoDB
-      await Product.findByIdAndDelete(productId);
-
-      console.log('✅ Product deleted from MongoDB:', product);
-
-      return res.status(200).json({
-        success: true,
-        message: '✅ Product deleted successfully.',
-        product
-      });
-    } catch (error) {
-      console.error('⚠️ Error processing request:', error);
-      return res.status(500).json({ error: '⚠️ Internal server error.' });
+    if (!updatedProduct) {
+      return res.status(404).json({ error: '⚠️⚠️ Product not found.' });
     }
+
+    res.status(200).json({
+      message: '✅ Product updated successfully.',
+      product: updatedProduct
+    });
+  } catch (error) {
+    console.error('⚠️ Error processing request:', error);
+    res.status(500).json({
+      success: false,
+      error: '⚠️ Internal server error.'
+    });
   }
-);
+});
+
+app.delete('/admin/product/:id', async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ error: '⚠️ Product not found' });
+    }
+
+    // Initialize S3 client
+    const s3 = new S3Client({
+      region: process.env.AWS_BUCKET_REGION,
+      credentials: fromEnv()
+    });
+
+    // Delete images from AWS S3
+    const deleteObjects = product.images.map(image => ({
+      Key: getImageKeyFromUrl(image.url)
+    }));
+    const deleteParams = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Delete: {
+        Objects: deleteObjects,
+        Quiet: false
+      }
+    };
+    await s3.send(new DeleteObjectsCommand(deleteParams));
+
+    console.log('✅ Images deleted from AWS S3');
+
+    // Delete product from MongoDB
+    await Product.findByIdAndDelete(productId);
+
+    console.log('✅ Product deleted from MongoDB:', product);
+
+    return res.status(200).json({
+      success: true,
+      message: '✅ Product deleted successfully.',
+      product
+    });
+  } catch (error) {
+    console.error('⚠️ Error processing request:', error);
+    return res.status(500).json({ error: '⚠️ Internal server error.' });
+  }
+});
 
 module.exports = app;
