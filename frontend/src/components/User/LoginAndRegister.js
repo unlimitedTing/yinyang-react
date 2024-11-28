@@ -41,15 +41,11 @@ const LoginAndRegister = () => {
   const registerSubmit = e => {
     e.preventDefault();
     setProgress(50);
-
-    const myForm = new FormData();
-    myForm.set('name', name);
-    myForm.set('email', email);
-    myForm.set('password', password);
-    dispatch(register(myForm));
+    dispatch(register(name, email, password));
   };
 
   const registerDataChange = e => {
+    console.log(`Changing ${e.target.name}: ${e.target.value}`);
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 

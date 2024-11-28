@@ -52,6 +52,8 @@ app.use(
   })
 );
 
+app.use(express.json());
+
 // s3.config.update({
 //     region: process.env.AWS_BUCKET_REGION,
 //     accessKeyId: process.env.AWS_ACCESS_KEY_ID,

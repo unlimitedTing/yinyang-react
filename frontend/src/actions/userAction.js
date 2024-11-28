@@ -57,17 +57,16 @@ export const register = (name, email, password) => async dispatch => {
   try {
     dispatch({ type: REGISTER_USER_REQUEST });
 
-    const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-
-    // Create FormData for multipart request
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('password', password);
-    console.log(formData);
+    const config = {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+    const body = { name, email, password };
+    console.log('Data Sent:', body);
 
     // Send the request
-    const { data } = await api.post(`/api/v1/register`, formData, config);
+    const { data } = await axios.post(`/api/v1/register`, body, config);
 
     dispatch({ type: REGISTER_USER_SUCCESS, payload: data.user });
   } catch (error) {
