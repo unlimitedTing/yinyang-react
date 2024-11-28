@@ -16,6 +16,7 @@ const stripe = require('stripe')(
 // register user
 exports.registerUser = async (req, res, next) => {
   try {
+    console.log('register user', req);
     const { name, email, password } = req.body;
 
     const customer = await stripe.customers.create({
