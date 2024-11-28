@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const errorMiddleware = require('./middleware/error');
+const logger = require('./middlewares/logger');
 const multer = require('multer');
 const url = require('url');
 const {
@@ -119,6 +120,7 @@ process.noDeprecation = true;
 
 // middleware for error
 app.use(errorMiddleware);
+app.use(logger);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
