@@ -275,9 +275,6 @@ app.post(
   }
 );
 
-const fs = require('fs');
-const path = require('path');
-
 app.put('/admin/product/:id', upload.array('product', 10), async (req, res) => {
   try {
     const productId = req.params.id;
