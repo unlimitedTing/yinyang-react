@@ -241,26 +241,25 @@ app.post(
           .json({ success: false, message: 'No images uploaded' });
       }
       const uploadDir = path.join(__dirname, 'uploads');
-      const imageUrls = [];
-      for (const [index, base64Image] of images.entries()) {
-        // Validate the base64 format
-        const matches = base64Image.match(/^data:(image\/\w+);base64,(.+)$/);
-        if (!matches || matches.length !== 3) {
-          return res
-            .status(400)
-            .json({ success: false, message: 'Invalid image format' });
-        }
-
-        const extension = matches[1].split('/')[1];
-        const imageData = matches[2];
-        const filename = `${Date.now()}-${index}.${extension}`;
-        const filePath = path.join(uploadDir, filename);
-
-        // Save the decoded image to the uploads folder
-        fs.writeFileSync(filePath, Buffer.from(imageData, 'base64'));
-
-        imageUrls.push(`/uploads/${filename}`);
+      // 验证 Base64 格式
+      const matches = images.match(/^data:(image\/\w+);base64,(.+)$/);
+      if (!matches || matches.length !== 3) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid image format'
+        });
       }
+
+      // 提取图片数据和文件扩展名
+      const extension = matches[1].split('/')[1]; // 提取扩展名 (如 jpeg, png)
+      const imageData = matches[2]; // 提取 Base64 编码的数据
+      const filename = `${Date.now()}.${extension}`; // 生成唯一文件名
+      const filePath = path.join(uploadDir, filename); // 构建文件路径
+
+      // 将解码后的图片保存到本地
+      fs.writeFileSync(filePath, Buffer.from(imageData, 'base64'));
+
+      const imageUrl = `/uploads/${filename}`; // 图片的相对路径
       // Save product to the database
       const product = await Product.create({
         name,
@@ -268,7 +267,7 @@ app.post(
         price,
         category,
         Stock,
-        images: imageUrls.map(url => ({ url }))
+        images: imageUrl
       });
 
       res.status(201).json({
