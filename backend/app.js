@@ -271,6 +271,14 @@ app.post(
         }
       );
       const imageUrl = uploadResponse.secure_url;
+
+      // Construct the images array to match the schema
+      const imageArray = [
+        {
+          _id: `${Date.now()}`, // Generate a unique ID
+          url: imageUrl
+        }
+      ];
       // Save product to the database
       const product = await Product.create({
         name,
@@ -278,7 +286,7 @@ app.post(
         price,
         category,
         Stock,
-        images: imageUrl
+        images: imageArray
       });
 
       res.status(201).json({
