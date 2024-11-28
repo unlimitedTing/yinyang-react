@@ -30,11 +30,6 @@ const productSchema = mongoose.Schema({
       }
     }
   ],
-  user: {
-    type: Number,
-    ref: 'User',
-    required: true
-  },
   category: {
     type: String,
     required: [true, 'Please Enter product category']

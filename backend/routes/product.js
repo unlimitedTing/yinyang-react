@@ -1,41 +1,32 @@
 const express = require('express');
 const {
-   getAllProducts,
-   getAdminProducts,
-   getProductDetails,
-   createProductReview,
-   getProductReviews,
-   deleteReview,
-   addToWishList,
-   removeFromWishList,
-   getAllWishlistProducts
+  getAllProducts,
+  getAdminProducts,
+  getProductDetails,
+  createProductReview,
+  getProductReviews,
+  deleteReview,
+  addToWishList,
+  removeFromWishList,
+  getAllWishlistProducts
 } = require('../controllers/product');
-
-const { isAuthUser, authRoles } = require('../middleware/auth');
 
 const router = express.Router();
 
 router.route('/products').get(getAllProducts);
 
-router.route('/wishlist').get(isAuthUser, getAllWishlistProducts);
+router.route('/wishlist').get(getAllWishlistProducts);
 
-router
-    .route('/wishlist/:id')
-    .post(isAuthUser, addToWishList)
-    .delete(isAuthUser, removeFromWishList);
+router.route('/wishlist/:id').post(addToWishList).delete(removeFromWishList);
 
-router
-    .route('/admin/products')
-    .get(isAuthUser, authRoles('admin'), getAdminProducts);
+router.route('/admin/products').get(getAdminProducts);
 
 router.route('/product/:id').get(getProductDetails);
 
-router.route('/review').post(isAuthUser, createProductReview);
+router.route('/review').post(createProductReview);
 
-router
-    .route('/reviews')
-    .get(getProductReviews);
+router.route('/reviews').get(getProductReviews);
 
-router.route('/review/:reviewId').delete(isAuthUser, deleteReview);
+router.route('/review/:reviewId').delete(deleteReview);
 
 module.exports = router;

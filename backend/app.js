@@ -16,7 +16,6 @@ const {
 } = require('@aws-sdk/client-s3');
 const { fromEnv } = require('@aws-sdk/credential-provider-env');
 // const s3 = new S3Client();
-const { isAuthUser, authRoles } = require('./middleware/auth');
 const User = require('./models/user');
 const Product = require('./models/product');
 const jwt = require('jsonwebtoken');
@@ -174,7 +173,7 @@ app.post('/register', async (req, res) => {
   }
 });
 
-app.put('/me/update', isAuthUser, upload.single('image'), async (req, res) => {
+app.put('/me/update', upload.single('image'), async (req, res) => {
   try {
     const userId = req.user._id;
     const { name, email } = req.body;
@@ -312,8 +311,7 @@ app.post(
         price,
         category,
         Stock,
-        images: imageUrls.map(url => ({ url })),
-        user: req.user._id
+        images: imageUrls.map(url => ({ url }))
       });
 
       const newProduct = await product.save();
