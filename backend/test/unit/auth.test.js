@@ -4,15 +4,6 @@ const sinon = require('sinon');
 const authController = require('../controllers/auth.controller');
 const User = require('../../models/user');
 const stripe = require('stripe');
-const AWS = require('aws-sdk');
-
-AWS.config.update({
-    region: process.env.AWS_BUCKET_REGION,
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-});
-
-const s3 = new AWS.S3();
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -71,90 +62,90 @@ const expect = chai.expect;
 // });
 
 describe('User Controller', () => {
-    afterEach(() => {
-        sinon.restore();
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should return an error if email or password is missing', async () => {
+    const req = {
+      body: {
+        // Missing email and password
+      }
+    };
+
+    const result = await authController.loginUser(req);
+
+    expect(result).to.equal('Please Enter Email and Password');
+  });
+
+  it('should return an error if the email is invalid', async () => {
+    const req = {
+      body: {
+        email: 'invalid_email@example.com',
+        password: 'password123'
+      }
+    };
+
+    // Stub User.findOne to resolve with null, indicating that the user doesn't exist
+    sinon.stub(User, 'findOne').resolves(null);
+
+    const result = await authController.loginUser(req);
+
+    expect(result).to.equal('Failed to Login');
+  });
+
+  it('should return an error if the password is incorrect', async () => {
+    const req = {
+      body: {
+        email: 'valid_email@example.com',
+        password: 'incorrect_password'
+      }
+    };
+
+    // Stub User.findOne to resolve with a user but with a password mismatch
+    sinon.stub(User, 'findOne').resolves({
+      email: 'valid_email@example.com',
+      comparePassword: async () => false
     });
 
-    it('should return an error if email or password is missing', async () => {
-        const req = {
-            body: {
-                // Missing email and password
-            }
-        };
+    const result = await authController.loginUser(req);
 
-        const result = await authController.loginUser(req);
+    expect(result).to.equal('Failed to Login');
+  });
 
-        expect(result).to.equal('Please Enter Email and Password');
+  it('should return the user object if login is successful', async () => {
+    const req = {
+      body: {
+        email: 'valid_email@example.com',
+        password: 'correct_password'
+      }
+    };
+
+    // Stub User.findOne to resolve with a user and password match
+    sinon.stub(User, 'findOne').resolves({
+      email: 'valid_email@example.com',
+      comparePassword: async () => true
     });
 
-    it('should return an error if the email is invalid', async () => {
-        const req = {
-            body: {
-                email: 'invalid_email@example.com',
-                password: 'password123'
-            }
-        };
+    const result = await authController.loginUser(req);
 
-        // Stub User.findOne to resolve with null, indicating that the user doesn't exist
-        sinon.stub(User, 'findOne').resolves(null);
+    expect(result).to.be.an('object');
+    expect(result).to.have.property('email', 'valid_email@example.com');
+  });
 
-        const result = await authController.loginUser(req);
+  it('should return an error if an exception occurs', async () => {
+    const req = {
+      body: {
+        email: 'valid_email@example.com',
+        password: 'correct_password'
+      }
+    };
 
-        expect(result).to.equal('Failed to Login');
-    });
+    // Stub User.findOne to simulate an exception
+    sinon.stub(User, 'findOne').throws(new Error('Fake error'));
 
-    it('should return an error if the password is incorrect', async () => {
-        const req = {
-            body: {
-                email: 'valid_email@example.com',
-                password: 'incorrect_password'
-            }
-        };
+    const result = await authController.loginUser(req);
 
-        // Stub User.findOne to resolve with a user but with a password mismatch
-        sinon.stub(User, 'findOne').resolves({
-            email: 'valid_email@example.com',
-            comparePassword: async () => false
-        });
-
-        const result = await authController.loginUser(req);
-
-        expect(result).to.equal('Failed to Login');
-    });
-
-    it('should return the user object if login is successful', async () => {
-        const req = {
-            body: {
-                email: 'valid_email@example.com',
-                password: 'correct_password'
-            }
-        };
-
-        // Stub User.findOne to resolve with a user and password match
-        sinon.stub(User, 'findOne').resolves({
-            email: 'valid_email@example.com',
-            comparePassword: async () => true
-        });
-
-        const result = await authController.loginUser(req);
-
-        expect(result).to.be.an('object');
-        expect(result).to.have.property('email', 'valid_email@example.com');
-    });
-
-    it('should return an error if an exception occurs', async () => {
-        const req = {
-            body: {
-                email: 'valid_email@example.com',
-                password: 'correct_password'
-            }
-        };
-
-        // Stub User.findOne to simulate an exception
-        sinon.stub(User, 'findOne').throws(new Error('Fake error'));
-
-        const result = await authController.loginUser(req);
-
-        expect(result).to.equal('Failed to Login');
-    });
+    expect(result).to.equal('Failed to Login');
+  });
 });

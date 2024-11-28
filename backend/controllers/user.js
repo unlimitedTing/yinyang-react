@@ -1,14 +1,10 @@
-// const { s3 } = require('../app');
 const User = require('../models/user');
 const sendEmail = require('../utils/sendEmail');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 require('dotenv').config({ path: 'backend/config/config.env' });
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-const { fromEnv } = require('@aws-sdk/credential-provider-env');
 
 const timestamp = Date.now();
-const timestampInSeconds = Math.floor(timestamp / 1000);
 const stripe = require('stripe')(
   'sk_test_51Q2yOQDy6xKOypJNRMjGMpf7EwAyWZ0XXt0HnC418zImUZky7r29TwKYihLWEMWgo99vA6YIgQS1v4QU8m3mlPOY00hGffiDOz'
 );

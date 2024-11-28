@@ -6,42 +6,49 @@ const cors = require('cors');
 const errorMiddleware = require('./middleware/error');
 const logger = require('./middleware/logger');
 const multer = require('multer');
-const url = require('url');
-const {
-  S3Client,
-  PutObjectCommand,
-  DeleteObjectCommand,
-  UploadPartCommand,
-  DeleteObjectsCommand
-} = require('@aws-sdk/client-s3');
-const { fromEnv } = require('@aws-sdk/credential-provider-env');
-// const s3 = new S3Client();
-const User = require('./models/user');
-const Product = require('./models/product');
+const path = require('path');
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const stripe = require('stripe')(
   'sk_test_51Q2yOQDy6xKOypJNRMjGMpf7EwAyWZ0XXt0HnC418zImUZky7r29TwKYihLWEMWgo99vA6YIgQS1v4QU8m3mlPOY00hGffiDOz'
 );
 require('dotenv').config({ path: '/backend/config/config.env' });
 
+const User = require('./models/user');
+const Product = require('./models/product');
+
+// Configure CORS
 const allowedOrigins = [
-  'https://yinyangfrontend.netlify.app' // your frontend domain on Netlify
+  'https://yinyangfrontend.netlify.app', // Your frontend domain on Netlify
+  'http://localhost:3000' // For local development
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    console.log('Request origin:', origin);
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true // if you are using cookies
+  credentials: true // Enable cookies if needed
 };
 
 app.use(cors(corsOptions));
 
+// Custom headers for specific routes
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  next();
+});
+
+// Middleware for parsing cookies, JSON, and form data
 app.use(cookieParser());
 app.use(express.json({ limit: '50mb' }));
 app.use(
@@ -52,23 +59,25 @@ app.use(
   })
 );
 
-app.use(express.json());
+// Serve static files from the "uploads" folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// s3.config.update({
-//     region: process.env.AWS_BUCKET_REGION,
-//     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-//     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-// });
-
-// Initialize S3 client
-const s3 = new S3Client({
-  region: process.env.AWS_BUCKET_REGION,
-  credentials: fromEnv()
+// Configure Multer storage for local file handling
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, 'uploads');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir); // Create the uploads folder if it doesn't exist
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
 });
 
-// Configure Multer for file uploads
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage,
   fileFilter: (req, file, cb) => {
     if (
       file.mimetype === 'image/png' ||
@@ -81,12 +90,6 @@ const upload = multer({
     }
   }
 });
-
-// app.use(upload.single('image'));
-// app.use(upload.array('product', 10));
-
-const timestamp = Date.now();
-const timestampInSeconds = Math.floor(timestamp / 1000);
 
 // Route Imports
 const productRoute = require('./routes/product');
@@ -103,33 +106,15 @@ app.use('/api/v1', paymentRoute);
 app.use('/api/v1', couponRoute);
 app.use('/api/v1', subscriptionRoute);
 
-// CORS
-app.use(async (req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  );
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Methods', '*');
-  return next();
-});
-
-process.noDeprecation = true;
-
-// middleware for error
+// Middleware for logging and errors
 app.use(errorMiddleware);
 app.use(logger);
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Internal Server Error');
-});
 
 app.get('/', (req, res) => {
   res.send('Hello, welcome to my API!');
 });
 
+// Route to handle user registration
 app.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -146,7 +131,7 @@ app.post('/register', async (req, res) => {
       stripeCustomerId: customer.id
     });
 
-    let token = jwt.sign(
+    const token = jwt.sign(
       {
         userId: user._id,
         name: user.name,
@@ -175,97 +160,82 @@ app.post('/register', async (req, res) => {
 
 app.put('/me/update', upload.single('image'), async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user._id; // Extract user ID from the request (assumes authentication middleware sets `req.user`)
     const { name, email } = req.body;
     const file = req.file;
 
-    // Upload the avatar image to AWS S3
-    const uploadParams = {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: `${userId}-${file.originalname}`,
-      Body: file.buffer,
-      ContentType: file.mimetype
-    };
+    let avatarUrl;
 
-    const s3 = new S3Client({
-      region: process.env.AWS_BUCKET_REGION,
-      credentials: fromEnv()
-    });
-
-    // Upload the file to S3
-    const uploadCommand = new PutObjectCommand(uploadParams);
-    await s3.send(uploadCommand);
-
-    const cacheBuster = Date.now();
+    // Save the avatar locally if an image is uploaded
+    if (file) {
+      avatarUrl = `/uploads/${file.filename}`;
+    }
 
     // Update the user profile in the database
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { name, email },
+      { name, email, avatar: avatarUrl }, // Update the avatar URL if provided
       { new: true }
     );
 
+    if (!updatedUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'User not found' });
+    }
+
     res.status(200).json({
+      success: true,
       message: '✅ Profile updated successfully.',
       user: updatedUser
     });
   } catch (error) {
-    console.error('⚠️ Error processing request:', error);
-    res.status(500).json({ error: '⚠️ Internal server error.' });
+    console.error('⚠️ Error updating profile:', error);
+    res
+      .status(500)
+      .json({ success: false, error: '⚠️ Internal server error.' });
   }
 });
-
-// Extract image key from URL
-const getImageKeyFromUrl = imageUrl => {
-  const parsedUrl = url.parse(imageUrl);
-  const pathName = parsedUrl.pathname;
-  const key = pathName.substring(1); // Remove the leading slash (/)
-
-  return key;
-};
 
 app.delete('/admin/user/:id', async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await User.findById(userId);
 
+    // Find the user in the database
+    const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ error: '⚠️ User not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: '⚠️ User not found' });
     }
 
-    // Initialize S3 client
-    const s3 = new S3Client({
-      region: process.env.AWS_BUCKET_REGION,
-      credentials: fromEnv()
-    });
+    // Delete avatar file from local storage
+    if (user.avatar) {
+      const filePath = path.join(__dirname, user.avatar);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath); // Delete the avatar file
+        console.log('✅ Avatar deleted from local storage');
+      }
+    }
 
-    // Delete image from AWS S3
-    const imageKey = getImageKeyFromUrl(user.avatar);
-    const deleteParams = {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: imageKey
-    };
-
-    // Delete the object from S3
-    await s3.send(new DeleteObjectCommand(deleteParams));
-
-    console.log('✅ Image deleted from AWS S3');
-
-    // Delete user from MongoDB
+    // Delete the user from the database
     await User.findByIdAndDelete(userId);
 
-    console.log('✅ User deleted from MongoDB:', user);
+    console.log('✅ User deleted from database:', user);
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
-      message: '✅ Profile deleted successfully.'
+      message: '✅ User deleted successfully.'
     });
   } catch (error) {
-    console.error('⚠️ Error processing request:', error);
-    return res.status(500).json({ error: '⚠️ Internal server error.' });
+    console.error('⚠️ Error deleting user:', error);
+    res
+      .status(500)
+      .json({ success: false, error: '⚠️ Internal server error.' });
   }
 });
 
+// Route to add a product
 app.post(
   '/admin/add-product',
   upload.array('product', 10),
@@ -274,37 +244,15 @@ app.post(
       const { name, description, price, category, Stock } = req.body;
       const files = req.files;
 
-      const imageUrls = [];
-
-      if (files && files.length > 0) {
-        // Initialize S3 client
-        const s3 = new S3Client({
-          region: process.env.AWS_BUCKET_REGION,
-          credentials: fromEnv()
-        });
-
-        for (const file of files) {
-          // Upload the product image to AWS S3
-          const uploadParams = {
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Key: file.originalname,
-            Body: file.buffer,
-            ContentType: file.mimetype
-          };
-
-          // Upload the file to S3
-          const uploadCommand = new PutObjectCommand(uploadParams);
-          await s3.send(uploadCommand);
-
-          const cacheBuster = Date.now();
-          const avatarUrl = `https://${uploadParams.Bucket}.s3.${process.env.AWS_BUCKET_REGION}.amazonaws.com/${uploadParams.Key}?cacheBuster=${cacheBuster}`;
-
-          console.log('✅ Image uploaded successfully:', avatarUrl);
-          imageUrls.push(avatarUrl);
-        }
+      if (!files || files.length === 0) {
+        return res
+          .status(400)
+          .json({ success: false, message: 'No images uploaded' });
       }
 
-      // Create a new product in the database
+      const imageUrls = files.map(file => `/uploads/${file.filename}`);
+
+      // Save product to the database
       const product = await Product.create({
         name,
         description,
@@ -314,21 +262,21 @@ app.post(
         images: imageUrls.map(url => ({ url }))
       });
 
-      const newProduct = await product.save();
-
       res.status(201).json({
         message: '✅ Product created successfully.',
-        product: newProduct
+        product
       });
     } catch (error) {
       console.error('⚠️ Error creating product:', error);
-      res.status(500).json({
-        success: false,
-        error: '⚠️ Internal server error.' + error
-      });
+      res
+        .status(500)
+        .json({ success: false, error: '⚠️ Internal server error.' });
     }
   }
 );
+
+const fs = require('fs');
+const path = require('path');
 
 app.put('/admin/product/:id', upload.array('product', 10), async (req, res) => {
   try {
@@ -338,56 +286,27 @@ app.put('/admin/product/:id', upload.array('product', 10), async (req, res) => {
 
     let imageUrls = [];
 
+    // Find the existing product
     const product = await Product.findById(productId);
 
     if (!product) {
       return res.status(404).json({ error: '⚠️ Product not found' });
     }
 
-    // Initialize S3 client
-    const s3 = new S3Client({
-      region: process.env.AWS_BUCKET_REGION,
-      credentials: fromEnv()
+    // Delete old images from local storage
+    product.images.forEach(image => {
+      const filePath = path.join(__dirname, image.url);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath); // Remove the file from the local filesystem
+        console.log(`✅ Deleted image: ${filePath}`);
+      }
     });
 
-    // Delete images from AWS S3
-    const deleteObjects = product.images.map(image => ({
-      Key: getImageKeyFromUrl(image.url)
-    }));
-    const deleteParams = {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Delete: {
-        Objects: deleteObjects,
-        Quiet: false
-      }
-    };
-    const deleteObject = new DeleteObjectCommand(deleteParams);
-    await s3.send(deleteObject);
-
-    console.log('✅ Images deleted from AWS S3');
-
-    // Upload new images
-    const uploadParams = {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: `${productId}-${files.originalname}`,
-      Body: files.buffer,
-      ContentType: files.mimetype
-    };
-
-    for (const file of files) {
-      uploadParams.Key = file.originalname;
-      uploadParams.ContentType = file.mimetype;
-      uploadParams.Body = file.buffer;
-
-      await s3.send(new UploadPartCommand(uploadParams));
-
-      const cacheBuster = Date.now();
-      const avatarUrl = `https://${uploadParams.Bucket}.s3.${process.env.AWS_BUCKET_REGION}.amazonaws.com/${uploadParams.Key}?cacheBuster=${cacheBuster}`;
-
-      imageUrls.push({
-        key: file.originalname,
-        url: avatarUrl
-      });
+    // Save new images to local storage
+    if (files && files.length > 0) {
+      imageUrls = files.map(file => ({
+        url: `/uploads/${file.filename}` // Store relative path to the image
+      }));
     }
 
     // Update the product in the database
@@ -399,7 +318,7 @@ app.put('/admin/product/:id', upload.array('product', 10), async (req, res) => {
         price,
         category,
         stock,
-        images: imageUrls
+        images: imageUrls // Save new image URLs
       },
       { new: true }
     );
@@ -421,50 +340,43 @@ app.put('/admin/product/:id', upload.array('product', 10), async (req, res) => {
   }
 });
 
+// Route to delete a product
 app.delete('/admin/product/:id', async (req, res) => {
   try {
     const productId = req.params.id;
     const product = await Product.findById(productId);
 
     if (!product) {
-      return res.status(404).json({ error: '⚠️ Product not found' });
+      return res.status(404).json({ message: '⚠️ Product not found' });
     }
 
-    // Initialize S3 client
-    const s3 = new S3Client({
-      region: process.env.AWS_BUCKET_REGION,
-      credentials: fromEnv()
+    // Delete associated images from local storage
+    product.images.forEach(image => {
+      const filePath = path.join(__dirname, image.url);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
     });
 
-    // Delete images from AWS S3
-    const deleteObjects = product.images.map(image => ({
-      Key: getImageKeyFromUrl(image.url)
-    }));
-    const deleteParams = {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Delete: {
-        Objects: deleteObjects,
-        Quiet: false
-      }
-    };
-    await s3.send(new DeleteObjectsCommand(deleteParams));
-
-    console.log('✅ Images deleted from AWS S3');
-
-    // Delete product from MongoDB
+    // Delete the product from the database
     await Product.findByIdAndDelete(productId);
 
-    console.log('✅ Product deleted from MongoDB:', product);
-
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
-      message: '✅ Product deleted successfully.',
-      product
+      message: '✅ Product deleted successfully.'
     });
   } catch (error) {
-    console.error('⚠️ Error processing request:', error);
-    return res.status(500).json({ error: '⚠️ Internal server error.' });
+    console.error('⚠️ Error deleting product:', error);
+    res
+      .status(500)
+      .json({ success: false, error: '⚠️ Internal server error.' });
   }
+});
+
+// Middleware for handling unknown routes
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Internal Server Error');
 });
 
 module.exports = app;
