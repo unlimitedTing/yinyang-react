@@ -59,17 +59,21 @@ export const register = (name, email, password, avatar) => async dispatch => {
 
     const config = { headers: { 'Content-Type': 'multipart/form-data' } };
 
-    const { data } = await api.post(
-      `/api/v1/register`,
-      { name, email, password, avatar },
-      { config }
-    );
+    // Create FormData for multipart request
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('avatar', avatar);
+
+    // Send the request
+    const { data } = await api.post(`/api/v1/register`, formData, config);
 
     dispatch({ type: REGISTER_USER_SUCCESS, payload: data.user });
   } catch (error) {
     dispatch({
       type: REGISTER_USER_FAIL,
-      payload: error.response.data.message
+      payload: error.response?.data?.message || 'Something went wrong'
     });
   }
 };
