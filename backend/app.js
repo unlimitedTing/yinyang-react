@@ -47,13 +47,6 @@ app.use(
   })
 );
 
-// Serve static files from the "uploads" folder
-app.use(
-  '/uploads',
-  cors(corsOptions),
-  express.static(path.join(__dirname, 'uploads'))
-);
-
 // Configure Multer storage for local file handling
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -82,6 +75,13 @@ const upload = multer({
     }
   }
 });
+
+// Serve static files from the "uploads" folder
+app.use(
+  '/uploads',
+  cors(corsOptions),
+  express.static(path.join(__dirname, 'uploads'))
+);
 
 // Route Imports
 const productRoute = require('./routes/product');
@@ -233,17 +233,34 @@ app.post(
   upload.array('product', 10),
   async (req, res) => {
     try {
-      const { name, description, price, category, Stock } = req.body;
-      const files = req.files;
+      const { name, description, price, category, Stock, images } = req.body;
 
-      if (!files || files.length === 0) {
+      if (!images || images.length === 0) {
         return res
           .status(400)
           .json({ success: false, message: 'No images uploaded' });
       }
+      const uploadDir = path.join(__dirname, 'uploads');
+      const imageUrls = [];
+      for (const [index, base64Image] of images.entries()) {
+        // Validate the base64 format
+        const matches = base64Image.match(/^data:(image\/\w+);base64,(.+)$/);
+        if (!matches || matches.length !== 3) {
+          return res
+            .status(400)
+            .json({ success: false, message: 'Invalid image format' });
+        }
 
-      const imageUrls = files.map(file => `/uploads/${file.filename}`);
+        const extension = matches[1].split('/')[1];
+        const imageData = matches[2];
+        const filename = `${Date.now()}-${index}.${extension}`;
+        const filePath = path.join(uploadDir, filename);
 
+        // Save the decoded image to the uploads folder
+        fs.writeFileSync(filePath, Buffer.from(imageData, 'base64'));
+
+        imageUrls.push(`/uploads/${filename}`);
+      }
       // Save product to the database
       const product = await Product.create({
         name,
