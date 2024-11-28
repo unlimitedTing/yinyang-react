@@ -1,4 +1,4 @@
-const logger = (req, res, next) => {
+module.exports = (req, res, next) => {
   console.log('--- Incoming Request ---');
   console.log(`Method: ${req.method}`);
   console.log(`URL: ${req.originalUrl}`);
