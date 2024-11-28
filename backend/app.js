@@ -36,18 +36,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Custom headers for specific routes
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  );
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  next();
-});
-
 // Middleware for parsing cookies, JSON, and form data
 app.use(cookieParser());
 app.use(express.json({ limit: '50mb' }));
@@ -60,7 +48,11 @@ app.use(
 );
 
 // Serve static files from the "uploads" folder
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(
+  '/uploads',
+  cors(corsOptions),
+  express.static(path.join(__dirname, 'uploads'))
+);
 
 // Configure Multer storage for local file handling
 const storage = multer.diskStorage({
