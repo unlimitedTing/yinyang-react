@@ -165,9 +165,14 @@ app.put('/me/update', upload.single('image'), async (req, res) => {
 
     let avatarUrl;
 
-    // Save the avatar locally if an image is uploaded
+    // Upload avatar to Cloudinary if an image is uploaded
     if (file) {
-      avatarUrl = `/uploads/${file.filename}`;
+      const uploadResponse = await cloudinary.uploader.upload(file.path, {
+        folder: 'avatars',
+        public_id: `${userId}_${Date.now()}`,
+        overwrite: true
+      });
+      avatarUrl = uploadResponse.secure_url;
     }
 
     // Update the user profile in the database
@@ -208,13 +213,11 @@ app.delete('/admin/user/:id', async (req, res) => {
         .json({ success: false, message: '⚠️ User not found' });
     }
 
-    // Delete avatar file from local storage
+    // Delete avatar file from Cloudinary
     if (user.avatar) {
-      const filePath = path.join(__dirname, user.avatar);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath); // Delete the avatar file
-        console.log('✅ Avatar deleted from local storage');
-      }
+      const publicId = user.avatar.split('/').pop().split('.')[0]; // Extract public_id from Cloudinary URL
+      await cloudinary.uploader.destroy(`avatars/${publicId}`);
+      console.log('✅ Avatar deleted from Cloudinary');
     }
 
     // Delete the user from the database
@@ -317,20 +320,29 @@ app.put('/admin/product/:id', upload.array('product', 10), async (req, res) => {
       return res.status(404).json({ error: '⚠️ Product not found' });
     }
 
-    // Delete old images from local storage
-    product.images.forEach(image => {
-      const filePath = path.join(__dirname, image.url);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath); // Remove the file from the local filesystem
-        console.log(`✅ Deleted image: ${filePath}`);
-      }
-    });
+    // Delete old images from Cloudinary
+    for (const image of product.images) {
+      const publicId = image.url.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(`products/${publicId}`);
+    }
 
-    // Save new images to local storage
-    if (files && files.length > 0) {
-      imageUrls = files.map(file => ({
-        url: `/uploads/${file.filename}` // Store relative path to the image
-      }));
+    // Upload new image to Cloudinary
+    const imageArray = [];
+    if (req.body.images) {
+      const matches = req.body.images.match(/^data:(image\/\w+);base64,(.+)$/);
+      if (matches && matches.length === 3) {
+        const uploadResponse = await cloudinary.uploader.upload(
+          `data:image/jpeg;base64,${matches[2]}`,
+          {
+            folder: 'products',
+            public_id: `${Date.now()}`
+          }
+        );
+        imageArray.push({
+          _id: `${Date.now()}`,
+          url: uploadResponse.secure_url
+        });
+      }
     }
 
     // Update the product in the database
@@ -374,13 +386,11 @@ app.delete('/admin/product/:id', async (req, res) => {
       return res.status(404).json({ message: '⚠️ Product not found' });
     }
 
-    // Delete associated images from local storage
-    product.images.forEach(image => {
-      const filePath = path.join(__dirname, image.url);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    });
+    // Delete associated images from Cloudinary
+    for (const image of product.images) {
+      const publicId = image.url.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(`products/${publicId}`);
+    }
 
     // Delete the product from the database
     await Product.findByIdAndDelete(productId);

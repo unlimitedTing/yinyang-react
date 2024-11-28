@@ -16,9 +16,6 @@ const AdminRoute = ({ children }) => {
       dispatch(loadUser());
     }
   }, [user, dispatch]);
-  console.log(user);
-  console.log('Loading', loading);
-  console.log(isAuthenticated);
   const isAdmin = user.role == 'admin';
   // Check if user is authenticated and is an admin
   if (!isAuthenticated || !isAdmin) {

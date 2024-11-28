@@ -10,7 +10,6 @@ import './AdminHeader.css';
 
 const AdminHeader = () => {
   const { isAuthenticated, user } = useSelector(state => state.user);
-  console.log(user);
   const dispatch = useDispatch();
 
   const handleLogout = () => {

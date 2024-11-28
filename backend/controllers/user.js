@@ -12,7 +12,6 @@ const stripe = require('stripe')(
 // register user
 exports.registerUser = async (req, res, next) => {
   try {
-    console.log('register user req.body:', req.body);
     const { name, email, password } = req.body;
 
     const customer = await stripe.customers.create({
@@ -68,10 +67,8 @@ exports.loginUser = async (req, res, next) => {
         message: 'Please Enter Email and Password'
       });
     }
-    console.log('Response from API:', req);
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      console.log('not find user');
       return res.status(401).json({
         success: false,
         message: 'Invalid Email or Password'

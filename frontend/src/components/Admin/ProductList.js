@@ -45,56 +45,6 @@ const ProductList = () => {
     dispatch(getAdminProduct());
   }, [dispatch, error, deleteError, navigate, isDeleted]);
 
-  const columns = [
-    { field: 'id', headerName: 'Product ID', minWidth: 200, flex: 0.5 },
-    {
-      field: 'name',
-      headerName: 'Name',
-      minWidth: 350,
-      flex: 1
-    },
-    {
-      field: 'stock',
-      headerName: 'Stock',
-      type: 'number',
-      minWidth: 150,
-      flex: 0.3
-    },
-    {
-      field: 'price',
-      headerName: 'Price',
-      type: 'number',
-      minWidth: 270,
-      flex: 0.5
-    },
-    {
-      field: 'actions',
-      flex: 0.3,
-      headerName: 'Actions',
-      minWidth: 150,
-      type: 'number',
-      sortable: false,
-      renderCell: params => {
-        return (
-          <Fragment>
-            <Link to={`/admin/product/${params.getValue(params.id, 'id')}`}>
-              <FontAwesomeIcon icon={faEdit} className='text-blue-500 mr-2' />
-            </Link>
-
-            <button
-              onClick={() =>
-                deleteProductHandler(params.getValue(params.id, 'id'))
-              }
-              className='text-red-500'
-            >
-              <FontAwesomeIcon icon={faTrash} />
-            </button>
-          </Fragment>
-        );
-      }
-    }
-  ];
-
   const rows = [];
 
   products &&

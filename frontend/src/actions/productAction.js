@@ -85,8 +85,6 @@ export const getProduct =
       }
 
       const { data } = await api.get(link);
-      console.log('data');
-      console.log(data);
       dispatch({
         type: ALL_PRODUCT_SUCCESS,
         payload: data
