@@ -13,6 +13,7 @@ const stripe = require('stripe')(
   'sk_test_51Q2yOQDy6xKOypJNRMjGMpf7EwAyWZ0XXt0HnC418zImUZky7r29TwKYihLWEMWgo99vA6YIgQS1v4QU8m3mlPOY00hGffiDOz'
 );
 require('dotenv').config({ path: '/backend/config/config.env' });
+const cloudinary = require('cloudinary').v2;
 
 const User = require('./models/user');
 const Product = require('./models/product');
@@ -104,6 +105,12 @@ app.use(logger);
 
 app.get('/', (req, res) => {
   res.send('Hello, welcome to my API!');
+});
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 // Route to handle user registration
@@ -241,6 +248,9 @@ app.post(
           .json({ success: false, message: 'No images uploaded' });
       }
       const uploadDir = path.join(__dirname, 'uploads');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
       // 验证 Base64 格式
       const matches = images.match(/^data:(image\/\w+);base64,(.+)$/);
       if (!matches || matches.length !== 3) {
@@ -251,15 +261,16 @@ app.post(
       }
 
       // 提取图片数据和文件扩展名
-      const extension = matches[1].split('/')[1]; // 提取扩展名 (如 jpeg, png)
       const imageData = matches[2]; // 提取 Base64 编码的数据
-      const filename = `${Date.now()}.${extension}`; // 生成唯一文件名
-      const filePath = path.join(uploadDir, filename); // 构建文件路径
-
-      // 将解码后的图片保存到本地
-      fs.writeFileSync(filePath, Buffer.from(imageData, 'base64'));
-
-      const imageUrl = `/uploads/${filename}`; // 图片的相对路径
+      // 上传到 Cloudinary
+      const uploadResponse = await cloudinary.uploader.upload(
+        `data:image/jpeg;base64,${imageData}`,
+        {
+          folder: 'products', // 存储在 Cloudinary 的 products 文件夹中
+          public_id: `${Date.now()}`
+        }
+      );
+      const imageUrl = uploadResponse.secure_url;
       // Save product to the database
       const product = await Product.create({
         name,
