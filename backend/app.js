@@ -4,7 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const errorMiddleware = require('./middleware/error');
-const logger = require('./middlewares/logger');
+const logger = require('./middleware/logger');
 const multer = require('multer');
 const url = require('url');
 const {
